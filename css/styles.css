@@ -1,9 +1,13 @@
 body {
+	margin: 0 auto;
+	padding: 0px;
+	color: white;
 
 }
 
 .container {
-	max-width: 960px;
+	position: fixed;
+	top: 0px;
 	margin: 0 auto;
 
 }
