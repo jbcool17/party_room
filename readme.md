@@ -1,8 +1,6 @@
 # Project 3 - Party Room
 
-# bring the party to your computer with THREE.js
-
----------------------------
+bring the party to your computer with THREE.js
 
 ## **Javascript**
 
