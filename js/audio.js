@@ -1,6 +1,7 @@
 var scene, camera, renderer;
 var cubeGeometry, cube, material;
 var sphereGeometry, sphere;
+var clock = new THREE.Clock();
 
 scene = new THREE.Scene();
 camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
@@ -9,18 +10,32 @@ renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-camera.position.z = 8;
+camera.position.z = 0;
+camera.position.y = 0;
+camera.position.x = -130;
+
+var light = new THREE.PointLight(0xffffff);
+light.position.set(-100, 200, 100);
+scene.add(light);
+
+
+
 
 //OBJECTS
-cubeGeometry = new THREE.BoxGeometry( .5, 1, 10 );
+cubeGeometry = new THREE.BoxGeometry( 1, 1, 10 );
 material = new THREE.MeshBasicMaterial( { name: 'green-wire', color: 0x00ff00, wireframe: true } );
+shinyMaterial = new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0x666666, emissive: 0xff0000, shininess: 1, shading: THREE.SmoothShading, opacity: 0.9, transparent: true });
 
 
 
 for( var i = 0; i < 100; i++ ) {
-    cube = new THREE.Mesh( cubeGeometry, material );
+    var a = scene.children.length
+    var b = scene.children[a-1].position.x
+    
+    cube = new THREE.Mesh( cubeGeometry, shinyMaterial );
     scene.add( cube );
-    cube.position.x = i;
+
+    cube.position.x = b + 10 ;
 
 }
 
