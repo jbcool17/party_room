@@ -22,7 +22,7 @@ scene.add(light);
 
 
 //OBJECTS
-cubeGeometry = new THREE.BoxGeometry( 1, 1, 10 );
+cubeGeometry = new THREE.BoxGeometry( 5, 1, 10 );
 material = new THREE.MeshBasicMaterial( { name: 'green-wire', color: 0x00ff00, wireframe: true } );
 shinyMaterial = new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0x666666, emissive: 0xff0000, shininess: 1, shading: THREE.SmoothShading, opacity: 0.9, transparent: true });
 
@@ -31,7 +31,7 @@ shinyMaterial = new THREE.MeshPhongMaterial( { color: 0x00ff00, specular: 0x6666
 for( var i = 0; i < 100; i++ ) {
     var a = scene.children.length
     var b = scene.children[a-1].position.x
-    
+
     cube = new THREE.Mesh( cubeGeometry, shinyMaterial );
     scene.add( cube );
 

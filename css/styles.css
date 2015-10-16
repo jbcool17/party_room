@@ -17,7 +17,17 @@ body {
 	position: fixed;
 	top: -50px;
 	right: 30px;
+	opacity: 0.8;
+	
 }
 div#mp3_player{ width:500px; height:60px; background:#fff; margin:50px auto; }
 div#mp3_player > div > audio{ padding:10px; width:500px; background:#efe; float:left;  }
 div#mp3_player > canvas{ padding:10px 10px 0px 10px; width:500px; height:30px; background:#002D3C; float:left; }
+
+.display {
+	display: -webkit-box;
+}
+
+.display p {
+	
+}
