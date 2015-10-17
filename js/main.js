@@ -9,13 +9,14 @@ renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-camera.position.z = 5;
-camera.position.x = 5;
+camera.position.z = 6;
+camera.position.x = 0.5;
+camera.position.y = .1;
 
 var controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-var light = new THREE.AmbientLight( 0x404040 ); // soft white light
-scene.add( light );
+// var light = new THREE.AmbientLight( 0x404040 ); // soft white light
+// scene.add( light );
 
 var spotLight = new THREE.SpotLight( 0xffffff );
 spotLight.position.set( 1, 20, 10 );
@@ -26,6 +27,8 @@ spotLight.shadowMapWidth = 1024;
 spotLight.shadowMapHeight = 1024;
 spotLight.angle = 1;
 spotLight.exponent = 5;
+spotLight.shadowDarkness = 1;
+spotLight.name = 'SpotLight';
 scene.add( spotLight );
 
 renderer.shadowMap.enabled = true;
@@ -42,13 +45,13 @@ var planeMaterial = new THREE.MeshPhongMaterial( {color: 0xffffff,
 												side: THREE.DoubleSide, 
 												shading: THREE.FlatShading} );
 
-
 var ground = new THREE.Mesh( planeGeometry, planeMaterial );
 ground.rotation.x = 1.57;
 ground.position.y = -2;
 ground.scale.multiplyScalar( 3 );
 ground.castShadow = false;
 ground.receiveShadow = true;
+ground.name = 'Ground'
 scene.add( ground );
 
 
@@ -66,8 +69,9 @@ var cubeCreate = function(cubeName) {
 	this.cubeName = cubeName;
 	this.cubeRotation = true;
 
-	this.cube = new THREE.Mesh( cubeGeometry, phongMaterial );
+	this.cube = new THREE.Mesh( cubeGeometry, material );
 	this.cube.castShadow = true;
+	this.cube.name = 'Cube'
 	scene.add( this.cube );
 
 	return this.cubeName;
@@ -75,8 +79,28 @@ var cubeCreate = function(cubeName) {
 
 var cubeRemove = function () {
 	//removes all cubes
-	scene.children = [];
-	cubeHolder = [];
+
+	for (var i = 0; i < scene.children.length; i++) {
+
+		if ( scene.children[i].name === 'Cube') {
+			
+			scene.children.splice(i, 2);
+			cubeHolder.splice(i, 1);
+
+		}
+	}
+
+	// _.each(scene.children, function (element, i) {
+	// 	console.log(element.name, i);
+	// 	if ( element.name === 'Cube') {
+			
+	// 		scene.children.splice(i, 1);
+	// 		cubeHolder.splice(i, 1);
+	// 	}
+		
+	// });
+
+	
 }
 
 //RENDER & ANIMATE SCENE
@@ -85,11 +109,12 @@ var render = function () {
 
 	for (var i = 0; i < scene.children.length; i++ ) {
 
-		if (scene.children[i].type === "Mesh" && scene.children[i].geometry.type === 'BoxGeometry') {
+		if (scene.children[i].name === "Cube") {
 
 			scene.children[i].rotation.x += Math.random() * .1;
 			scene.children[i].rotation.y += 0.01;
 			scene.children[i].position.x += 0.01;
+
 
 		}
 		
