@@ -5,6 +5,18 @@ body {
 
 }
 
+header {
+	
+	position: fixed;
+	top: 0;
+	right: 10px;
+}
+
+header a {
+	color: white;
+	
+}
+
 .container {
 	position: fixed;
 	top: 0px;
@@ -31,3 +43,4 @@ div#mp3_player > canvas{ padding:10px 10px 0px 10px; width:500px; height:30px; b
 .display p {
 	
 }
+
