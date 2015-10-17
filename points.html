@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Party Room-Points</title>
+	<link rel="stylesheet" href="css/styles.css">
+	<script src="js/lib/jquery.js"></script>
+	<script src="js/lib/underscore.min.js"></script>
+	<script src="js/lib/three.min.js"></script>
+	<script src="js/lib/OrbitControls.js"></script>
+	<script src="js/lib/cannon.min.js"></script>
+	<script src="js/lib/renderers/PhysicsRenderer.js"></script>	
+</head>
+<body>
+	<div class="container">
+		<h1>PHYSICS</h1>
+		<div class="display">
+			<label>FLOCK</label>
+			<input id="velocity" type="range" min="0" max="50" value="25" />
+			<span id="velocity_value"></span>
+		</div>
+
+		
+	</div>
+	</div>
+	<script id="vs" type="x-shader/x-vertex">
+
+			varying vec2 vUv;
+
+			void main() {
+
+				vUv = uv;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+			}
+
+		</script>
+		<script id="fs" type="x-shader/x-fragment">
+
+			uniform sampler2D map;
+
+			uniform vec3 fogColor;
+			uniform float fogNear;
+			uniform float fogFar;
+
+			varying vec2 vUv;
+
+			void main() {
+
+				float depth = gl_FragCoord.z / gl_FragCoord.w;
+				float fogFactor = smoothstep( fogNear, fogFar, depth );
+
+				gl_FragColor = texture2D( map, vUv );
+				gl_FragColor.w *= pow( gl_FragCoord.z, 20.0 );
+				gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );
+
+			}
+
+		</script>
+	
+
+	<script src="js/points.js"></script>
+</body>
+</html>
