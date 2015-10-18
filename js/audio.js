@@ -33,9 +33,13 @@ for( var i = 0; i < 100; i++ ) {
     var b = scene.children[a-1].position.x
 
     cube = new THREE.Mesh( cubeGeometry, shinyMaterial );
-    scene.add( cube );
+    
 
     cube.position.x = b + 10 ;
+    
+    
+
+    scene.add( cube );
 
 }
 

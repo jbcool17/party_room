@@ -69,15 +69,21 @@ cubeGeometry = new THREE.BoxGeometry( 2, 2, 2);
 cube = new THREE.Mesh( cubeGeometry, cubeMaterial );
 // scene.add( cube );
 for ( var i = 0; i < 100; i ++ ) {
+
+
 	var randomColor = '0x' + Math.floor(Math.random()*16777215).toString(16) ;
 	cubeMaterial = new THREE.MeshBasicMaterial( { name: 'material', color: 0xaaaaff } );
 	var phong = new THREE.MeshPhongMaterial( {  specular: 0x111111, emissive: 0x040404, shininess: 100, shading: THREE.SmoothShading, opacity: 0.9, transparent: true });
 	var object = new THREE.Mesh( cubeGeometry, phong );
+
+	
 	object.material.color.setHex(randomColor);
 
 	object.position.x = Math.random() * 500 - 250;
 	object.position.y = Math.random() * 500 - 250;
 	object.position.z = Math.random() * 500 - 250;
+
+	
 
 	object.rotation.x = Math.random() * 2 * Math.PI;
 	object.rotation.y = Math.random() * 2 * Math.PI;
@@ -89,7 +95,7 @@ for ( var i = 0; i < 100; i ++ ) {
 
 	object.name = 'CUBE';
 
-	scene.add( object );
+	scene.add( object, glow );
 
 }
 

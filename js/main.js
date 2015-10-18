@@ -31,9 +31,16 @@ spotLight.shadowDarkness = 1;
 spotLight.name = 'SpotLight';
 scene.add( spotLight );
 
+
+var pointLightOne = new THREE.PointLight( 0xff0000 );
+pointLightOne.position.set( 1, 1, 10);
+scene.add( pointLightOne );
+
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.BasicShadowMap;
 renderer.setClearColor(0x000000, 1);
+
+
 
 //RESIZER
 var onWindowResize = function( event ) {
@@ -89,7 +96,8 @@ var cubeCreate = function(cubeName) {
 
 	this.cube = new THREE.Mesh( cubeGeometry, material );
 	this.cube.castShadow = true;
-	this.cube.name = 'Cube'
+	this.cube.name = 'Cube'    
+    
 	scene.add( this.cube );
 	
 	return this.cubeName;
@@ -145,7 +153,7 @@ var render = function () {
 			scene.children[i].position.y += 0.01;
 			scene.children[i].scale.y += 0.01;
 			// scene.children[i].scale.y = bar_height + 1;
-			console.log('1')
+			// console.log('1')
 
 		} else if(scene.children[i].name === "Cube" && scene.children[i].id % 2 === 1) {
 
