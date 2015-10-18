@@ -83,9 +83,9 @@ var cubeRemove = function () {
 	for (var i = 0; i < scene.children.length; i++) {
 
 		if ( scene.children[i].name === 'Cube') {
-			
-			scene.children.splice(i, 2);
-			cubeHolder.splice(i, 1);
+			console.log(scene.children[i], i);
+			scene.children.splice(i, 1);
+			cubeHolder = [];
 
 		}
 	}
@@ -102,6 +102,15 @@ var cubeRemove = function () {
 
 	
 }
+
+var onWindowResize = function( event ) {
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+
+  }
 
 //RENDER & ANIMATE SCENE
 var render = function () {
@@ -127,6 +136,7 @@ var render = function () {
 $(document).ready( function() {
 
 	render();
+	window.addEventListener( 'resize', onWindowResize, false );
 
 	$('#addBoxes').on('click', function () {
 
