@@ -7,3 +7,4 @@ bring the party to your computer with THREE.js
 - jquery.js: 
 - three.js: 
 - underscore.js: 
+- tween.js
