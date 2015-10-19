@@ -134,10 +134,15 @@ var cubeRemove = function () {
 }
 
 
-
+var h;
 //RENDER & ANIMATE SCENE
 var render = function () {
 	requestAnimationFrame( render );
+	var time = Date.now() * 0.00005;
+    // particleSystem.rotation.y += 0.01;
+    h = ( 360 * ( 1.0 + time ) % 360 ) / 360;
+    material.color.setHSL( h, 0.5, 0.5 );
+    pointLightOne.color.setHSL( h, 0.5, 0.5 );
 
 	
     
