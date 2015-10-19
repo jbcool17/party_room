@@ -187,7 +187,9 @@ for ( var i = 0; i < 100; i ++ ) {
     scene.add( object );
 
 }    
-    //===========================================================
+
+
+//===========================================================
     //PARTICLE
 
 var sprite = THREE.ImageUtils.loadTexture("assets/textures/disc.png");
@@ -302,6 +304,11 @@ $(document).ready(function() {
     render();
 
     window.addEventListener('resize', onWindowResize, false);
+    window.addEventListener("mousemove", function () {
+    scene.children[4].position.x = event.clientX - ( window.innerWidth / 2 );
+    scene.children[4].position.y = ( event.clientY - ( window.innerHeight / 2 ) ) * -1;
+    
+  });
 
     $('#addBoxes').on('click', function() {
 
