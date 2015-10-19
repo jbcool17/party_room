@@ -74,14 +74,26 @@ ground.name = 'Ground'
 var wallOne = new THREE.Mesh( planeGeometry, planeMaterial);
 wallOne.castShadow = false;
 wallOne.receiveShadow = true;
-wallOne.position.z = -10;
+wallOne.position.z = -100;
 wallOne.scale.x = 100;
+wallOne.scale.y = 50;
 var wallTwo = new THREE.Mesh( planeGeometry, planeMaterial);
 wallTwo.castShadow = false;
 wallTwo.receiveShadow = true;
 wallTwo.position.z = 100;
 wallTwo.scale.x = 100;
-scene.add( ground );
+wallTwo.scale.y = 50;
+var wallThree = new THREE.Mesh( planeGeometry, planeMaterial);
+wallThree.rotation.y = 1.57;
+wallThree.scale.x = 100;
+wallThree.scale.y = 50;
+wallThree.position.x = -100;
+var wallFour = new THREE.Mesh( planeGeometry, planeMaterial);
+wallFour.rotation.y = 1.57;
+wallFour.scale.x = 100;
+wallFour.scale.y = 50;
+wallFour.position.x = 100;
+scene.add( ground, wallOne, wallTwo, wallThree, wallFour );
 
 
 cubeGeometry = new THREE.BoxGeometry( 1, 1, 1 );
@@ -135,6 +147,7 @@ var cubeRemove = function () {
 
 
 var h;
+var randomColor = '0x' + Math.floor(Math.random()*16777215).toString(16) ;
 //RENDER & ANIMATE SCENE
 var render = function () {
 	requestAnimationFrame( render );
@@ -143,6 +156,8 @@ var render = function () {
     h = ( 360 * ( 1.0 + time ) % 360 ) / 360;
     material.color.setHSL( h, 0.5, 0.5 );
     pointLightOne.color.setHSL( h, 0.5, 0.5 );
+    // planeMaterial.color.setHSL( h, 0.5, 0.5 );
+    
 
 	
     
