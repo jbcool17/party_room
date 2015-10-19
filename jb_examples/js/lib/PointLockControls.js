@@ -10,9 +10,11 @@ THREE.PointerLockControls = function ( camera ) {
 
 	var pitchObject = new THREE.Object3D();
 	pitchObject.add( camera );
+	pitchObject.position.y = 4;
 
 	var yawObject = new THREE.Object3D();
 	yawObject.position.y = 10;
+
 	yawObject.add( pitchObject );
 
 	var PI_2 = Math.PI / 2;
@@ -21,10 +23,10 @@ THREE.PointerLockControls = function ( camera ) {
 
 		if ( scope.enabled === false ) return;
 
-		var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-		var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+		var movementX = event.movementX || event.mozMovementX || 0;
+		var movementY = event.movementY || event.mozMovementY || 0;
 
-		yawObject.rotation.y -= movementX * 0.002;
+		yawObject.rotation.y -= movementX * 0.002; //Tweek to look up and down.
 		pitchObject.rotation.x -= movementY * 0.002;
 
 		pitchObject.rotation.x = Math.max( - PI_2, Math.min( PI_2, pitchObject.rotation.x ) );

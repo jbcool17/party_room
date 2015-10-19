@@ -260,11 +260,11 @@ var camera, scene, renderer;
 					var time = performance.now();
 					var delta = ( time - prevTime ) / 1000;
 
-					velocity.x -= velocity.x * 1.0 * delta;
-					velocity.z -= velocity.z * 1.0 * delta;
+					velocity.x -= velocity.x * 10.0 * delta;
+					velocity.z -= velocity.z * 10.0 * delta;
 
 					velocity.y -= 9.8 * 50.0 * delta; // 100.0 = mass - GRAVITY
-
+					
 					if ( moveForward ) velocity.z -= 400.0 * delta;
 					if ( moveBackward ) velocity.z += 400.0 * delta;
 

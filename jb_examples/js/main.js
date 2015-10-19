@@ -132,7 +132,7 @@ var onKeyUp = function ( event ) {
 };
 
 
-var raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
+var raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 5 );
 
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
@@ -258,7 +258,7 @@ var cubeRemove = function() {
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //RANDOM CUBE SYSTEM
-for ( var i = 0; i < 100; i ++ ) {
+for ( var i = 0; i < 200; i ++ ) {
 
 
     var randomColor = '0x' + Math.floor(Math.random()*16777215).toString(16);
@@ -273,18 +273,18 @@ for ( var i = 0; i < 100; i ++ ) {
     
     object.material.color.setHex(randomColor);
 
-    object.position.x = Math.random() * 500 - 250;
-    object.position.y = Math.random() * 500 - 250;
-    object.position.z = Math.random() * 500 - 250;
+    object.position.x = Math.random() * 500 - 150;
+    object.position.y = 0;
+    object.position.z = Math.random() * 500 - 150;
 
     
 
-    object.rotation.x = Math.random() * 2 * Math.PI;
+    // object.rotation.x = Math.random() * 2 * Math.PI;
     object.rotation.y = Math.random() * 2 * Math.PI;
-    object.rotation.z = Math.random() * 2 * Math.PI;
+    // object.rotation.z = Math.random() * 2 * Math.PI;
 
     object.scale.x = Math.random() + 10;
-    object.scale.y = Math.random() + 10;
+    object.scale.y = Math.random() + 100;
     object.scale.z = Math.random() + 10;
 
     object.name = 'CUBE';
@@ -364,14 +364,14 @@ var render = function() {
 
         if (object instanceof THREE.Points) {
 
-            object.rotation.y += 0.0001;
+            object.rotation.y += 0.0008;
 
         }
 
     }
 
     bar_height = -(Math.random() * 10 / 2);
-
+    //CUBE MOVEMENT - AND GROWING
     for (var i = 0; i < scene.children.length; i++) {
 
         if (scene.children[i].name === "Cube" && scene.children[i].id % 2 === 0) {
@@ -396,39 +396,67 @@ var render = function() {
 
         }
     }
+    
     firstPersonRender();
+    
     // controls.update();
     renderer.render(scene, camera);
 };
 
+ var intersects, INTERSECTED;
+
 var firstPersonRender = function() {
+    var mouse = new THREE.Vector2();
+
+    intersects = raycaster.intersectObjects( scene.children );
+    raycaster.set( controls.getObject(), controls.getObject() );
+
+    if ( intersects.length > 0 ) {
+
+        if ( INTERSECTED != intersects[ 0 ].object ) {
+
+            if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+
+            INTERSECTED = intersects[ 0 ].object;
+            INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+            INTERSECTED.material.emissive.setHex( 0xff0000 );
+
+        }
+
+    } else {
+
+        if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+
+        INTERSECTED = null;
+
+    }
+
     if ( controlsEnabled ) {
-        raycaster.ray.origin.copy( controls.getObject().position );
-        raycaster.ray.origin.y = 10;
+        // raycaster.ray.origin.copy( controls.getObject().position );
+        // raycaster.ray.origin.y -= 10; //height - entry point
 
-        var intersections = raycaster.intersectObjects( objects );
 
-        var isOnObject = intersections.length > 0;
+        // var intersections = raycaster.intersectObjects( objects );
 
+        // var isOnObject = intersections.length > 0;
         var time = performance.now();
         var delta = ( time - prevTime ) / 1000;
 
         velocity.x -= velocity.x * 10.0 * delta;
         velocity.z -= velocity.z * 10.0 * delta;
-
-        velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass - GRAVITY
+        velocity.y -= 9.8 * 50.0 * delta; // 100.0 = mass - GRAVITY
 
         if ( moveForward ) velocity.z -= 400.0 * delta;
         if ( moveBackward ) velocity.z += 400.0 * delta;
-
         if ( moveLeft ) velocity.x -= 400.0 * delta;
         if ( moveRight ) velocity.x += 400.0 * delta;
 
-        if ( isOnObject === true ) {
-            velocity.y = Math.max( 0, velocity.y );
-
-            canJump = true;
-        }
+        // if ( isOnObject === true ) {
+        //     velocity.y = Math.max( 0, velocity.y );
+        //     velocity.z = Math.max( 0, velocity.z );
+            
+        //     canJump = true;
+        // }
 
         controls.getObject().translateX( velocity.x * delta );
         controls.getObject().translateY( velocity.y * delta );
@@ -497,29 +525,5 @@ $(document).ready(function() {
             // cubeRemove();
         }
     }, 2000);
-
-    // $('body').on('keypress', function(e) {
-    //     console.log(e.keyCode);
-
-    //     //UP
-    //     if (e.keyCode === 119) {
-    //         camera.position.y += 1;
-    //     }
-
-    //     //DOWN
-    //     if (e.keyCode === 115) {
-    //         camera.position.y -= 1;
-    //     }
-
-    //     //LEFT
-    //     if (e.keyCode === 97) {
-    //         camera.position.x -= 1;
-    //     }
-    //     //RIGHT
-    //     if (e.keyCode === 100) {
-    //         camera.position.x += 1;
-    //     }
-
-    // });
 
 });
