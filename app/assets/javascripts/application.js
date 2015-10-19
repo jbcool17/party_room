@@ -12,6 +12,8 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require_tree ./libraries
+//= require_tree ./threejs
 //= require react
 //= require react_ujs
 //= require components
