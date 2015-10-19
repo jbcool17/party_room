@@ -403,16 +403,20 @@ var render = function() {
     renderer.render(scene, camera);
 };
 
- var intersects, INTERSECTED;
+ var intersects, INTERSECTED, ray;
 
 var firstPersonRender = function() {
-    var mouse = new THREE.Vector2();
+    var mouse = new THREE.Vector3();
 
     intersects = raycaster.intersectObjects( scene.children );
-    raycaster.set( controls.getObject(), controls.getObject() );
+
+    raycaster.setFromCamera( mouse, camera );
+    
+    ray = raycaster.ray.origin.copy( controls.getObject().position );
+    
 
     if ( intersects.length > 0 ) {
-
+       
         if ( INTERSECTED != intersects[ 0 ].object ) {
 
             if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
@@ -421,24 +425,35 @@ var firstPersonRender = function() {
             INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
             INTERSECTED.material.emissive.setHex( 0xff0000 );
 
+
+            
+
+
         }
+
 
     } else {
 
         if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 
         INTERSECTED = null;
+        
 
     }
 
     if ( controlsEnabled ) {
-        // raycaster.ray.origin.copy( controls.getObject().position );
-        // raycaster.ray.origin.y -= 10; //height - entry point
+        
+        var obj = controls.getObject()
+        var children = scene.children
 
+        // console.log(obj.position.distanceTo( children[10].position ));
+        // for (var i = 0; i < children.length; i++ ) {
 
-        // var intersections = raycaster.intersectObjects( objects );
+        //     if ( obj.position.distanceTo( children[i].position ) < 2 ) {
+        //         console.log(obj.position.distanceTo( children[i].position));
+        //     }
+        // }
 
-        // var isOnObject = intersections.length > 0;
         var time = performance.now();
         var delta = ( time - prevTime ) / 1000;
 
@@ -451,7 +466,7 @@ var firstPersonRender = function() {
         if ( moveLeft ) velocity.x -= 400.0 * delta;
         if ( moveRight ) velocity.x += 400.0 * delta;
 
-        // if ( isOnObject === true ) {
+        // if ( noMove === true ) {
         //     velocity.y = Math.max( 0, velocity.y );
         //     velocity.z = Math.max( 0, velocity.z );
             
