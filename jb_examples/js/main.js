@@ -2,19 +2,49 @@ var scene, camera, renderer;
 var cubeGeometry, cube, material;
 var sphereGeometry, sphere;
 
+
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
+//Setup Scene and Effects
 scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x000000, 0.001);
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
+//CAMERA
 camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-
-renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
 camera.position.z = 15;
 camera.position.x = 0.5;
 camera.position.y = .1;
 
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
+//Setup renderer
+renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.BasicShadowMap;
+renderer.setClearColor(0x000000, 1);
+document.body.appendChild(renderer.domElement);
+
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
+//Setup Orbit Controls
 var controls = new THREE.OrbitControls(camera, renderer.domElement);
 
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
+//RESIZER
+var onWindowResize = function(event) {
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
+//LIGHTS
 var light = new THREE.AmbientLight(0x1111); // soft white light
 scene.add(light);
 
@@ -29,32 +59,16 @@ spotLight.angle = 1;
 spotLight.exponent = 5;
 spotLight.shadowDarkness = 1;
 spotLight.name = 'SpotLight';
-scene.add(spotLight);
-
 
 var pointLightOne = new THREE.PointLight(0xff0000);
 pointLightOne.position.set(1, 1, 10);
-scene.add(pointLightOne);
 
-scene.fog = new THREE.FogExp2(0x000000, 0.001);
-
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.BasicShadowMap;
-renderer.setClearColor(0x000000, 1);
+scene.add( light, spotLight, pointLightOne);
 
 
-
-//RESIZER
-var onWindowResize = function(event) {
-
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
-
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
 //OBJECTS
-//Materials
 phongMaterial = new THREE.MeshPhongMaterial({
     color: 0x156289,
     emissive: 0x072534
@@ -71,6 +85,7 @@ var planeMaterial = new THREE.MeshPhongMaterial({
     side: THREE.DoubleSide,
     shading: THREE.SmoothShading
 });
+
 
 var planeGeometry = new THREE.PlaneGeometry(100, 100, 1);
 var ground = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -109,17 +124,17 @@ scene.add(ground);
 
 
 cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
-sphereGeometry = new THREE.SphereGeometry(1, 5, 5);
-
-sphere = new THREE.Mesh(sphereGeometry, phongMaterial);
 
 var cubeHolder = []; //holds some cube info
 var cubeCreate = function(cubeName) {
     this.cubeName = cubeName;
+    
     this.cubeRotation = true;
 
     this.cube = new THREE.Mesh(cubeGeometry, material);
+    
     this.cube.castShadow = true;
+    
     this.cube.name = 'Cube'
 
     scene.add(this.cube);
@@ -129,11 +144,15 @@ var cubeCreate = function(cubeName) {
 
 var cubeCreateTwo = function(cubeName) {
     this.cubeName = cubeName;
+    
     this.cubeRotation = true;
-
+    
     this.cube = new THREE.Mesh(cubeGeometry, material);
+    
     this.cube.castShadow = true;
+    
     this.cube.name = 'CubeTwo'
+    
     scene.add(this.cube);
 
     return this.cubeName;
@@ -153,16 +172,21 @@ var cubeRemove = function() {
             }
 
         }
+}
 
-
-    }
-//CUBE SYSTEM
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
+//RANDOM CUBE SYSTEM
 for ( var i = 0; i < 100; i ++ ) {
 
 
-    var randomColor = '0x' + Math.floor(Math.random()*16777215).toString(16) ;
-    cubeMaterial = new THREE.MeshBasicMaterial( { name: 'material', color: 0xaaaaff } );
-    var cubeSystemMaterial = new THREE.MeshPhongMaterial( {  specular: 0x111111, emissive: 0x040404, shininess: 100, shading: THREE.SmoothShading, opacity: 0.9, transparent: true });
+    var randomColor = '0x' + Math.floor(Math.random()*16777215).toString(16);
+    var cubeSystemMaterial = new THREE.MeshPhongMaterial( {  specular: 0x111111, 
+                                                            emissive: 0x040404, 
+                                                            shininess: 100, 
+                                                            shading: THREE.SmoothShading, 
+                                                            opacity: 0.9, 
+                                                            transparent: true });
     var object = new THREE.Mesh( cubeGeometry, cubeSystemMaterial );
 
     
@@ -189,24 +213,24 @@ for ( var i = 0; i < 100; i ++ ) {
 }    
 
 
-//===========================================================
-    //PARTICLE
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
+//PARTICLE - Star Like in Background
 
 var sprite = THREE.ImageUtils.loadTexture("assets/textures/disc.png");
 var particleCount = 1000,
     particles = new THREE.Geometry(),
-    pMaterial = new THREE.PointsMaterial({
+    particleMaterial = new THREE.PointsMaterial({
         size: 6,
         sizeAttenuation: false,
         map: sprite,
         alphaTest: 0.5,
         transparent: true
     });
-pMaterial.color.setHSL(1.0, 5, 0.7);
 
+particleMaterial.color.setHSL(1.0, 5, 0.7);
 
 // particleSystem.sortParticles = true;
-
 // now create the individual particles
 for (var p = 0; p < particleCount; p++) {
 
@@ -218,19 +242,16 @@ for (var p = 0; p < particleCount; p++) {
         particle = new THREE.Vector3(pX, pY, pZ);
 
 
-    particle.velocity = new THREE.Vector3(
-        0, // x
-        -Math.random(), // y: random vel
-        0);
+    particle.velocity = new THREE.Vector3( 0, -Math.random(), 0 );
     // add it to the geometry
-    particles.vertices.push(particle);
+    particles.vertices.push( particle );
 
 }
 
 // create the particle system
 var particleSystem = new THREE.Points(
     particles,
-    pMaterial);
+    particleMaterial);
 
 // add it to the scene
 scene.add(particleSystem);
@@ -244,12 +265,13 @@ var randomColor = '0x' + Math.floor(Math.random() * 16777215).toString(16);
 //RENDER & ANIMATE SCENE
 var render = function() {
     requestAnimationFrame(render);
+    
     var time = Date.now() * 0.00005;
     // particleSystem.rotation.y += 0.01;
     h = (360 * (1.0 + time) % 360) / 360;
     material.color.setHSL(h, 0.5, 0.5);
     pointLightOne.color.setHSL(h, 0.5, 0.5);
-    pMaterial.color.setHSL(h, 0.5, 0.5);
+    particleMaterial.color.setHSL(h, 0.5, 0.5);
     // planeMaterial.color.setHSL( h, 0.5, 0.5 );
 
     //Particle SYstem
