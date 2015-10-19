@@ -1,7 +1,7 @@
 var scene, camera, renderer;
 var cubeGeometry, cube, material;
 var sphereGeometry, sphere;
-
+var objects = [];
 
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
@@ -12,9 +12,9 @@ scene.fog = new THREE.FogExp2(0x000000, 0.001);
 //++++++++++++++++++++++++++++++++++++++++++++
 //CAMERA
 camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.x = 0;
+camera.position.y = -10;
 camera.position.z = 15;
-camera.position.x = 0.5;
-camera.position.y = .1;
 
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
@@ -23,24 +23,10 @@ renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.BasicShadowMap;
+renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setClearColor(0x000000, 1);
 document.body.appendChild(renderer.domElement);
 
-//++++++++++++++++++++++++++++++++++++++++++++
-//++++++++++++++++++++++++++++++++++++++++++++
-//Setup Orbit Controls
-var controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-//++++++++++++++++++++++++++++++++++++++++++++
-//++++++++++++++++++++++++++++++++++++++++++++
-//RESIZER
-var onWindowResize = function(event) {
-
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
 
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
@@ -64,6 +50,101 @@ var pointLightOne = new THREE.PointLight(0xff0000);
 pointLightOne.position.set(1, 1, 10);
 
 scene.add( light, spotLight, pointLightOne);
+
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
+//Setup Orbit Controls
+// var controls = new THREE.OrbitControls(camera, renderer.domElement);
+// var controlsEnabled = false;
+
+var moveForward = false;
+var moveBackward = false;
+var moveLeft = false;
+var moveRight = false;
+var canJump = false;
+
+var prevTime = performance.now();
+var velocity = new THREE.Vector3();
+
+var controls = new THREE.PointerLockControls( camera );
+scene.add( controls.getObject() );
+controlsEnabled = true;
+controls.enabled = true;
+
+var onKeyDown = function ( event ) {
+
+    switch ( event.keyCode ) {
+
+        case 38: // up
+        case 87: // w
+            moveForward = true;
+            break;
+
+        case 37: // left
+        case 65: // a
+            moveLeft = true; break;
+
+        case 40: // down
+        case 83: // s
+            moveBackward = true;
+            break;
+
+        case 39: // right
+        case 68: // d
+            moveRight = true;
+            break;
+
+        case 32: // space
+            if ( canJump === true ) velocity.y += 350;
+            canJump = false;
+            break;
+
+    }
+
+};
+
+var onKeyUp = function ( event ) {
+
+    switch( event.keyCode ) {
+
+        case 38: // up
+        case 87: // w
+            moveForward = false;
+            break;
+
+        case 37: // left
+        case 65: // a
+            moveLeft = false;
+            break;
+
+        case 40: // down
+        case 83: // s
+            moveBackward = false;
+            break;
+
+        case 39: // right
+        case 68: // d
+            moveRight = false;
+            break;
+
+    }
+
+};
+
+
+var raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 10 );
+
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
+//RESIZER
+var onWindowResize = function(event) {
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
 
 
 //++++++++++++++++++++++++++++++++++++++++++++
@@ -89,7 +170,7 @@ var planeMaterial = new THREE.MeshPhongMaterial({
 
 var planeGeometry = new THREE.PlaneGeometry(100, 100, 1);
 var ground = new THREE.Mesh(planeGeometry, planeMaterial);
-ground.rotation.x = 1.57;
+ground.rotateX( - Math.PI / 2 );
 ground.position.y = -2;
 ground.scale.x = 100;
 ground.scale.y = 100;
@@ -207,7 +288,7 @@ for ( var i = 0; i < 100; i ++ ) {
     object.scale.z = Math.random() + 10;
 
     object.name = 'CUBE';
-
+    objects.push(object);
     scene.add( object );
 
 }    
@@ -265,7 +346,7 @@ var randomColor = '0x' + Math.floor(Math.random() * 16777215).toString(16);
 //RENDER & ANIMATE SCENE
 var render = function() {
     requestAnimationFrame(render);
-    
+
     var time = Date.now() * 0.00005;
     // particleSystem.rotation.y += 0.01;
     h = (360 * (1.0 + time) % 360) / 360;
@@ -315,9 +396,57 @@ var render = function() {
 
         }
     }
-    controls.update();
+    firstPersonRender();
+    // controls.update();
     renderer.render(scene, camera);
 };
+
+var firstPersonRender = function() {
+    if ( controlsEnabled ) {
+        raycaster.ray.origin.copy( controls.getObject().position );
+        raycaster.ray.origin.y = 10;
+
+        var intersections = raycaster.intersectObjects( objects );
+
+        var isOnObject = intersections.length > 0;
+
+        var time = performance.now();
+        var delta = ( time - prevTime ) / 1000;
+
+        velocity.x -= velocity.x * 10.0 * delta;
+        velocity.z -= velocity.z * 10.0 * delta;
+
+        velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass - GRAVITY
+
+        if ( moveForward ) velocity.z -= 400.0 * delta;
+        if ( moveBackward ) velocity.z += 400.0 * delta;
+
+        if ( moveLeft ) velocity.x -= 400.0 * delta;
+        if ( moveRight ) velocity.x += 400.0 * delta;
+
+        if ( isOnObject === true ) {
+            velocity.y = Math.max( 0, velocity.y );
+
+            canJump = true;
+        }
+
+        controls.getObject().translateX( velocity.x * delta );
+        controls.getObject().translateY( velocity.y * delta );
+        controls.getObject().translateZ( velocity.z * delta );
+
+        if ( controls.getObject().position.y < 10 ) {
+
+            velocity.y = 0;
+            controls.getObject().position.y = 10;
+
+            canJump = true;
+
+        }
+
+        prevTime = time;
+
+    }
+}
 
 
 
@@ -325,12 +454,14 @@ $(document).ready(function() {
 
     render();
 
+    document.addEventListener( 'keydown', onKeyDown, false );
+    document.addEventListener( 'keyup', onKeyUp, false );
     window.addEventListener('resize', onWindowResize, false);
-    window.addEventListener("mousemove", function () {
-    scene.children[4].position.x = event.clientX - ( window.innerWidth / 2 );
-    scene.children[4].position.y = ( event.clientY - ( window.innerHeight / 2 ) ) * -1;
+    // window.addEventListener("mousemove", function () {
+    // scene.children[4].position.x = event.clientX - ( window.innerWidth / 2 );
+    // scene.children[4].position.y = ( event.clientY - ( window.innerHeight / 2 ) ) * -1;
     
-  });
+    // });
 
     $('#addBoxes').on('click', function() {
 
@@ -367,28 +498,28 @@ $(document).ready(function() {
         }
     }, 2000);
 
-    $('body').on('keypress', function(e) {
-        console.log(e.keyCode);
+    // $('body').on('keypress', function(e) {
+    //     console.log(e.keyCode);
 
-        //UP
-        if (e.keyCode === 119) {
-            camera.position.y += 1;
-        }
+    //     //UP
+    //     if (e.keyCode === 119) {
+    //         camera.position.y += 1;
+    //     }
 
-        //DOWN
-        if (e.keyCode === 115) {
-            camera.position.y -= 1;
-        }
+    //     //DOWN
+    //     if (e.keyCode === 115) {
+    //         camera.position.y -= 1;
+    //     }
 
-        //LEFT
-        if (e.keyCode === 97) {
-            camera.position.x -= 1;
-        }
-        //RIGHT
-        if (e.keyCode === 100) {
-            camera.position.x += 1;
-        }
+    //     //LEFT
+    //     if (e.keyCode === 97) {
+    //         camera.position.x -= 1;
+    //     }
+    //     //RIGHT
+    //     if (e.keyCode === 100) {
+    //         camera.position.x += 1;
+    //     }
 
-    });
+    // });
 
 });
