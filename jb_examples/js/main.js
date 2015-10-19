@@ -2,6 +2,7 @@ var scene, camera, renderer;
 var cubeGeometry, cube, material;
 var sphereGeometry, sphere;
 var objects = [];
+var lastTime;
 
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
@@ -13,9 +14,10 @@ scene.fog = new THREE.FogExp2(0x000000, 0.001);
 //CAMERA
 camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.x = 0;
-camera.position.y = -10;
+camera.position.y = 0;
 camera.position.z = 15;
-
+// camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 3000 );
+// camera.position.z = 15;
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //Setup renderer
@@ -53,86 +55,93 @@ scene.add( light, spotLight, pointLightOne);
 
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
-//Setup Orbit Controls
+//CONTROLS
+
+controls = new THREE.FirstPersonControls( camera );
+                controls.movementSpeed = 20;
+                controls.lookSpeed = 0.1;
+                controls.lookVertical = false;
+
+lastTime = performance.now();
 // var controls = new THREE.OrbitControls(camera, renderer.domElement);
 // var controlsEnabled = false;
 
-var moveForward = false;
-var moveBackward = false;
-var moveLeft = false;
-var moveRight = false;
-var canJump = false;
+// var moveForward = false;
+// var moveBackward = false;
+// var moveLeft = false;
+// var moveRight = false;
+// var canJump = false;
 
-var prevTime = performance.now();
-var velocity = new THREE.Vector3();
+// var prevTime = performance.now();
+// var velocity = new THREE.Vector3();
 
-var controls = new THREE.PointerLockControls( camera );
-scene.add( controls.getObject() );
-controlsEnabled = true;
-controls.enabled = true;
+// var controls = new THREE.PointerLockControls( camera );
+// scene.add( controls.getObject() );
+// controlsEnabled = true;
+// controls.enabled = true;
 
-var onKeyDown = function ( event ) {
+// var onKeyDown = function ( event ) {
 
-    switch ( event.keyCode ) {
+//     switch ( event.keyCode ) {
 
-        case 38: // up
-        case 87: // w
-            moveForward = true;
-            break;
+//         case 38: // up
+//         case 87: // w
+//             moveForward = true;
+//             break;
 
-        case 37: // left
-        case 65: // a
-            moveLeft = true; break;
+//         case 37: // left
+//         case 65: // a
+//             moveLeft = true; break;
 
-        case 40: // down
-        case 83: // s
-            moveBackward = true;
-            break;
+//         case 40: // down
+//         case 83: // s
+//             moveBackward = true;
+//             break;
 
-        case 39: // right
-        case 68: // d
-            moveRight = true;
-            break;
+//         case 39: // right
+//         case 68: // d
+//             moveRight = true;
+//             break;
 
-        case 32: // space
-            if ( canJump === true ) velocity.y += 350;
-            canJump = false;
-            break;
+//         case 32: // space
+//             if ( canJump === true ) velocity.y += 350;
+//             canJump = false;
+//             break;
 
-    }
+//     }
 
-};
+// };
 
-var onKeyUp = function ( event ) {
+// var onKeyUp = function ( event ) {
 
-    switch( event.keyCode ) {
+//     switch( event.keyCode ) {
 
-        case 38: // up
-        case 87: // w
-            moveForward = false;
-            break;
+//         case 38: // up
+//         case 87: // w
+//             moveForward = false;
+//             break;
 
-        case 37: // left
-        case 65: // a
-            moveLeft = false;
-            break;
+//         case 37: // left
+//         case 65: // a
+//             moveLeft = false;
+//             break;
 
-        case 40: // down
-        case 83: // s
-            moveBackward = false;
-            break;
+//         case 40: // down
+//         case 83: // s
+//             moveBackward = false;
+//             break;
 
-        case 39: // right
-        case 68: // d
-            moveRight = false;
-            break;
+//         case 39: // right
+//         case 68: // d
+//             moveRight = false;
+//             break;
 
-    }
+//     }
 
-};
+// };
 
 
-var raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 5 );
+// var raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 5 );
 
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
@@ -258,9 +267,9 @@ var cubeRemove = function() {
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //RANDOM CUBE SYSTEM
-for ( var i = 0; i < 200; i ++ ) {
+for ( var i = 0; i < 2000; i ++ ) {
 
-
+    var sphereGeometry = new THREE.BoxGeometry(10, 10, 10);
     var randomColor = '0x' + Math.floor(Math.random()*16777215).toString(16);
     var cubeSystemMaterial = new THREE.MeshPhongMaterial( {  specular: 0x111111, 
                                                             emissive: 0x040404, 
@@ -268,26 +277,26 @@ for ( var i = 0; i < 200; i ++ ) {
                                                             shading: THREE.SmoothShading, 
                                                             opacity: 0.9, 
                                                             transparent: true });
-    var object = new THREE.Mesh( cubeGeometry, cubeSystemMaterial );
+    var object = new THREE.Mesh( sphereGeometry, cubeSystemMaterial );
 
     
     object.material.color.setHex(randomColor);
 
-    object.position.x = Math.random() * 500 - 150;
+    object.position.x = (Math.random() * 1500 - 150) + 20 ;
     object.position.y = 0;
-    object.position.z = Math.random() * 500 - 150;
+    object.position.z = (Math.random() * 1500 - 150) + 20;
 
     
 
     // object.rotation.x = Math.random() * 2 * Math.PI;
-    object.rotation.y = Math.random() * 2 * Math.PI;
+    // object.rotation.y = Math.random() * 2 * Math.PI;
     // object.rotation.z = Math.random() * 2 * Math.PI;
 
-    object.scale.x = Math.random() + 10;
-    object.scale.y = Math.random() + 100;
-    object.scale.z = Math.random() + 10;
+    // object.scale.x = Math.random() + 10;
+    // object.scale.y = Math.random() + 10;
+    // object.scale.z = Math.random() + 10;
 
-    object.name = 'CUBE';
+    object.name = 'CubeSystem';
     objects.push(object);
     scene.add( object );
 
@@ -355,6 +364,15 @@ var render = function() {
     particleMaterial.color.setHSL(h, 0.5, 0.5);
     // planeMaterial.color.setHSL( h, 0.5, 0.5 );
 
+    for (i = 0; i < objects.length; i++) {
+
+        var object = objects[i];
+
+            
+
+    }
+
+
     //Particle SYstem
     for (i = 0; i < scene.children.length; i++) {
 
@@ -397,62 +415,66 @@ var render = function() {
         }
     }
     
-    firstPersonRender();
-    
+    // firstPersonRender();
+    // collDetection();
+    var timeAlso = performance.now() / 1000;
+    controls.update( timeAlso - lastTime ); 
     // controls.update();
     renderer.render(scene, camera);
+    lastTime = timeAlso;
 };
 
- var intersects, INTERSECTED, ray;
+ var intersects, INTERSECTED, ray, noMove;
 
 var firstPersonRender = function() {
-    var mouse = new THREE.Vector3();
-
-    intersects = raycaster.intersectObjects( scene.children );
-
-    raycaster.setFromCamera( mouse, camera );
-    
-    ray = raycaster.ray.origin.copy( controls.getObject().position );
+    // var mouse = new THREE.Vector3();
+    // intersects = raycaster.intersectObjects( scene.children );
+    // raycaster.setFromCamera( mouse, camera );
+    // ray = raycaster.ray.origin.copy( controls.getObject().position );
     
 
-    if ( intersects.length > 0 ) {
+    // if ( intersects.length > 0 ) {
        
-        if ( INTERSECTED != intersects[ 0 ].object ) {
+    //     if ( INTERSECTED != intersects[ 0 ].object ) {
 
-            if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+    //         if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 
-            INTERSECTED = intersects[ 0 ].object;
-            INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-            INTERSECTED.material.emissive.setHex( 0xff0000 );
+    //         INTERSECTED = intersects[ 0 ].object;
+    //         INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+    //         INTERSECTED.material.emissive.setHex( 0xff0000 );
 
+    //     }
+    // } else {
 
-            
+    //     if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+    //     INTERSECTED = null;
+    // }
 
-
-        }
-
-
-    } else {
-
-        if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-
-        INTERSECTED = null;
-        
-
-    }
 
     if ( controlsEnabled ) {
-        
+
         var obj = controls.getObject()
         var children = scene.children
 
         // console.log(obj.position.distanceTo( children[10].position ));
-        // for (var i = 0; i < children.length; i++ ) {
+        for (var i = 0; i < children.length; i++ ) {
 
-        //     if ( obj.position.distanceTo( children[i].position ) < 2 ) {
-        //         console.log(obj.position.distanceTo( children[i].position));
-        //     }
-        // }
+            if ( obj.position.distanceTo( children[i].position ) < 11 && children[i].name === 'CubeSystem') {
+                console.log(children[i].id,obj.position.distanceTo( children[i].position));
+                noMove = true;
+                canJump = true;
+            } else {
+                noMove = false;
+            }
+        }
+
+        if ( noMove === true ) {
+            velocity.y = Math.max( 0, velocity.y );
+            // velocity.z = Math.max( 0, velocity.z );
+            
+            canJump = true;
+        }
+        
 
         var time = performance.now();
         var delta = ( time - prevTime ) / 1000;
@@ -466,12 +488,7 @@ var firstPersonRender = function() {
         if ( moveLeft ) velocity.x -= 400.0 * delta;
         if ( moveRight ) velocity.x += 400.0 * delta;
 
-        // if ( noMove === true ) {
-        //     velocity.y = Math.max( 0, velocity.y );
-        //     velocity.z = Math.max( 0, velocity.z );
-            
-        //     canJump = true;
-        // }
+        
 
         controls.getObject().translateX( velocity.x * delta );
         controls.getObject().translateY( velocity.y * delta );
@@ -486,9 +503,32 @@ var firstPersonRender = function() {
 
         }
 
+
+
         prevTime = time;
 
     }
+}
+
+
+var collDetection = function() {
+    var obj = controls.getObject()
+    var children = scene.children
+
+    // console.log(obj.position.distanceTo( children[10].position ));
+    for (var i = 0; i < children.length; i++ ) {
+
+        if ( obj.position.distanceTo( children[i].position ) < 10.5 && children[i].name === 'CubeSystem') {
+            console.log(children[i].name,obj.position.distanceTo( children[i].position));
+            velocity.y = Math.max( 0, velocity.y );
+            velocity.z = Math.max( 0, velocity.z );
+            
+            canJump = true;
+        } else {
+            noMove = false;
+        }
+    }
+    // return noMove;
 }
 
 
@@ -497,8 +537,8 @@ $(document).ready(function() {
 
     render();
 
-    document.addEventListener( 'keydown', onKeyDown, false );
-    document.addEventListener( 'keyup', onKeyUp, false );
+    // document.addEventListener( 'keydown', onKeyDown, false );
+    // document.addEventListener( 'keyup', onKeyUp, false );
     window.addEventListener('resize', onWindowResize, false);
     // window.addEventListener("mousemove", function () {
     // scene.children[4].position.x = event.clientX - ( window.innerWidth / 2 );
