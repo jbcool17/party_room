@@ -13,12 +13,14 @@ scene = new THREE.Scene();
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //CAMERA
-camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
 
 camera.position.x = 300;
-camera.position.y = -100;
-camera.position.z = 330;
-
+camera.position.y = 100;
+camera.position.z = 0;
+camera.rotation.x = 0;
+camera.rotation.y = 2;
+camera.rotation.z = 0;
 // camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 3000 );
 // camera.position.z = 15;
 //++++++++++++++++++++++++++++++++++++++++++++
@@ -30,7 +32,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.BasicShadowMap;
 renderer.setPixelRatio( window.devicePixelRatio );
 
-renderer.setClearColor(0xF39C12, 1);
+renderer.setClearColor(0xffffff, 1);
 
 document.body.appendChild(renderer.domElement);
 
@@ -45,6 +47,13 @@ var ambient = new THREE.AmbientLight( 0xffffff );
 var pointLight = new THREE.PointLight( 0xffffff, 2 );
         scene.add( pointLight );
 
+var spotLight = new THREE.SpotLight( 0xaaaaaa);
+spotLight.position.set( 0, 350, 0 );
+spotLight.castShadow = true;
+scene.add( spotLight );
+// var spotLightHelper = new THREE.SpotLightHelper( spotLight );
+// scene.add( spotLightHelper );
+
 //++++++++++++++++++++++++++++++++++++++ 
 //++++++++++++++++++++++++++++++++++++++ 
 var path = "pisa/";
@@ -58,46 +67,59 @@ var path = "pisa/";
         var textureCube = THREE.ImageUtils.loadTextureCube( urls );
         var material = new THREE.MeshBasicMaterial( { color: 0xffffff, envMap: textureCube } );
 
-//++++++++++++++++++++++++++++++++++++++ 
-// var material  = new THREE.MeshPhongMaterial( { color: 0x111111, opacity: 0.5, wireframe: true });
+//++++++++++++++++++++++++++++++++++++++
+var phong  = new THREE.MeshPhongMaterial( { color: 0xffffff, opacity: 0.5}); //0x111111
+var planeGeometry = new THREE.PlaneGeometry( 2000, 2000, 100, 100 );
+        planeGeometry.rotateX( - Math.PI / 2 );
+        materialPlane = new THREE.MeshBasicMaterial( { color: 0xffffff } ); //0x0011ff
+
+        var ground = new THREE.Mesh( planeGeometry, phong );
+        ground.position.y = -10;
+        ground.receiveShadow = true;
+        scene.add( ground );
+
+
 var sphereHold = [];
 var Z = 0;
-for (var k = 0; k < 10; k++ ){
-  var Y = 0;
-  for (var i = 0; i < 10; i++ ) {
-    var X = 0;
-    for (var j = 0; j < 10; j++ ) {
-      sphereGeometry = new THREE.SphereGeometry( 100, 32, 16 );
-      // sphereGeometry = new THREE.SphereGeometry( 5 );
-      mesh = new THREE.Mesh( sphereGeometry, material);
-      mesh.position.x = X
-      mesh.position.y = Y
-      mesh.position.z = Z;
-      mesh.scale.x = .1
-      mesh.scale.y = .1
-      mesh.scale.z = .1
-      scene.add(mesh);
-      sphereHold.push(mesh);
-      X +=40; 
-    }
-    Y += 20;
-  }
-  Z += 40
-}
+// for (var k = 0; k < 10; k++ ){
+//   var Y = 0;
+//   for (var i = 0; i < 10; i++ ) {
+//     var X = 0;
+//     for (var j = 0; j < 10; j++ ) {
+//       sphereGeometry = new THREE.SphereGeometry( 100, 32, 16 );
+//       // sphereGeometry = new THREE.SphereGeometry( 5 );
+//       var material = new THREE.MeshBasicMaterial( { color: 0xffffff, envMap: textureCube } );
+//       mesh = new THREE.Mesh( sphereGeometry, material);
+//       mesh.position.x = X
+//       mesh.position.y = Y
+//       mesh.position.z = Z;
+//       mesh.scale.x = .1
+//       mesh.scale.y = .1
+//       mesh.scale.z = .1
+//       scene.add(mesh);
+//       sphereHold.push(mesh);
+//       X +=40; 
+//     }
+//     Y += 20;
+//   }
+//   Z += 40
+// }
 
 var sphereHoldAudio = [];
 var Z = 0;
 for (var i = 0; i < 10; i++ ) {
     var X = 0;
     for (var j = 0; j < 10; j ++ ) {
-      sphereGeometry = new THREE.SphereGeometry( 100, 32, 16 );
-      // sphereGeometry = new THREE.SphereGeometry( 5 );
+      // sphereGeometry = new THREE.SphereGeometry( 100, 32, 16 );
+      sphereGeometry = new THREE.SphereGeometry( 5 );
+      var material = new THREE.MeshBasicMaterial( { color: 0xaaffff, wireframe: true } );
       mesh = new THREE.Mesh( sphereGeometry, material);
-      mesh.position.x = X + 400;
-      mesh.position.z = Z;
-      mesh.scale.x = .1
-      mesh.scale.y = .1
-      mesh.scale.z = .1
+      mesh.position.x = X - 70;
+      mesh.position.z = Z - 70;
+      // mesh.scale.x = .1
+      // mesh.scale.y = .1
+      // mesh.scale.z = .1
+      mesh.castShadow = true;
       scene.add(mesh);
       sphereHoldAudio.push(mesh);
       X +=20; 
@@ -123,9 +145,9 @@ var render = function() {
       
     }
 
-    material.color.setHSL(h, 0.5, 0.5);
+    // material.color.setHSL(h, 0.5, 0.5);
     pointLight.color.setHSL(h, 0.5, 0.5);
-
+    // camera.lookAt(scene.position);
     controls.update();
     
     renderer.render(scene, camera);
@@ -134,7 +156,7 @@ var render = function() {
 
 // Create a new instance of an audio object and adjust some of its properties
 var audio = new Audio();
-audio.src = '052406.mp3';
+audio.src = '052406.mp3'; //'OZ-08092015.mp3';
 audio.controls = true;
 audio.loop = true;
 audio.autoplay = true;
@@ -160,7 +182,15 @@ var frameLooper = function (){
         bar_height = -fbc_array[i] / 2;
         sphereHoldAudio[i].position.y = -1 * (bar_height + 1);
         // sphereHold[i].position.x = bar_width * 10;
+        // console.log(bar_height);
+        if ( bar_height < -30 ) {
 
+            sphereHoldAudio[i].material.color.setHSL(h * bar_height, 0.5, 0.5);
+
+        } else {
+
+          sphereHoldAudio[i].material.color.setHSL(h * bar_height, 0.5, 1);
+        }
         
     // particleSystem.rotation.y += 0.01;
         
