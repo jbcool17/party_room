@@ -27,7 +27,7 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.BasicShadowMap;
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setClearColor(0x000000, 1);
-document.body.appendChild(renderer.domElement);
+document.body.insertBefore(renderer.domElement, document.body.firstChild);
 
 
 //++++++++++++++++++++++++++++++++++++++++++++

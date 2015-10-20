@@ -6,7 +6,17 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-	<%= react_component('Navigation') %>
+	<nav id='globalNav'>
+		<ul>
+			<%= link_to root_path do %>
+				<li>Home</li>
+			<% end %>
+			
+			<%= link_to cubeworld_path do %>
+				<li>Cube World</li>
+			<% end %>
+		</ul>
+	</nav>
 
 	<%= yield %>
 	
