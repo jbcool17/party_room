@@ -14,9 +14,11 @@ scene = new THREE.Scene();
 //++++++++++++++++++++++++++++++++++++++++++++
 //CAMERA
 camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+
 camera.position.x = 300;
 camera.position.y = -100;
 camera.position.z = 330;
+
 // camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 3000 );
 // camera.position.z = 15;
 //++++++++++++++++++++++++++++++++++++++++++++
@@ -27,13 +29,16 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.BasicShadowMap;
 renderer.setPixelRatio( window.devicePixelRatio );
+
 renderer.setClearColor(0xF39C12, 1);
+
 document.body.appendChild(renderer.domElement);
 
 controls = new THREE.OrbitControls( camera, renderer.domElement );
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //LIGHTS
+
 var light = new THREE.PointLight(0xaa0000); // soft white light
 scene.add(light);
 
@@ -45,6 +50,30 @@ scene.add(spotLight);
 
 var spotLightHelper = new THREE.SpotLightHelper( spotLight );
 scene.add( spotLightHelper );
+//++++++++++++++++++++++++++++++++++++++ 
+//++++++++++++++++++++++++++++++++++++++ 
+//++++++++++++++++++++++++++++++++++++++ 
+
+var light = new THREE.AmbientLight(0x111111); // soft white light
+scene.add(light);
+
+var spotLight = new THREE.SpotLight(0xffffff);
+spotLight.position.set(1, 20, 10);
+spotLight.castShadow = true;
+spotLight.shadowCameraNear = 8;
+spotLight.shadowCameraFar = 30;
+spotLight.shadowMapWidth = 1024;
+spotLight.shadowMapHeight = 1024;
+spotLight.angle = 1;
+spotLight.exponent = 5;
+spotLight.shadowDarkness = 1;
+spotLight.name = 'SpotLight';
+
+var pointLightOne = new THREE.PointLight(0xff0000);
+pointLightOne.position.set(1, 1, 10);
+
+scene.add( light, spotLight, pointLightOne);
+
 //++++++++++++++++++++++++++++++++++++++ 
 //++++++++++++++++++++++++++++++++++++++ 
 //++++++++++++++++++++++++++++++++++++++ 
@@ -83,9 +112,11 @@ var render = function() {
     for (var i = 0; i < sphereHold.length; i++ ) {
       sphereHold[i].rotation.x += 0.01;
     }
+
     var time = Date.now() * 0.00005;
     h = (360 * (1.0 + time) % 360) / 360;
     spotLight.color.setHSL(h, 0.5, 0.5);
+
     controls.update();
     
     renderer.render(scene, camera);
@@ -144,5 +175,6 @@ $(document).ready(function() {
 
   render();
   initMp3Player();
+
 
 });
