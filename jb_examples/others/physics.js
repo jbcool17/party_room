@@ -80,11 +80,11 @@ scene.add( light, spotLight, pointLightOne);
   scene.add(mesh);
   var ground  = THREEx.Oimo.createBodyFromMesh(world, mesh, { move : false });
 
-  var box = new THREE.BoxGeometry(10,100,1);
+  var box = new THREE.BoxGeometry(25,100,1);
   var boxMesh = new THREE.Mesh( box, material);
   boxMesh.position.y = 2;
   boxMesh.position.z = 15;
-  boxMesh.rotation.y = .1;
+  boxMesh.rotation.y = .5;
   scene.add(boxMesh);
 
 var boxBody  = THREEx.Oimo.createBodyFromMesh(world, boxMesh, { move: false });
@@ -94,11 +94,16 @@ var boxBody  = THREEx.Oimo.createBodyFromMesh(world, boxMesh, { move: false });
 var sphereBody
 var bodies = [];
 var spheres = [];
-for (var i = 0; i < 10; i++ ) {
-  material = new THREE.MeshBasicMaterial( {color: 0x00ff00, wireframe: true });
+for (var i = 0; i < 100; i++ ) {
+  var material  = new THREE.MeshPhongMaterial( { color: 0x00ff00,
+                            emissive: 0x072534,
+                            shininess: 100,
+                            side: THREE.DoubleSide,
+                            shading: THREE.SmoothShading
+                          });
   sphereGeometry = new THREE.SphereGeometry( 1 );
   mesh = new THREE.Mesh( sphereGeometry, material);
-  mesh.position.y = Math.random() * 20;
+  mesh.position.y = Math.random() * 200;
   scene.add(mesh);
 
   spheres.push(mesh);
@@ -128,7 +133,7 @@ var render = function() {
 
     }
     
-
+    
     controls.update();
     
     renderer.render(scene, camera);
@@ -137,5 +142,9 @@ var render = function() {
 
 $(document).ready(function() {
   render();
+
+  $('#velocity').on('change mousemove', function() {
+   ;
+
+  });
 });
-render();
