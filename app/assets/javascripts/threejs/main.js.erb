@@ -2,6 +2,7 @@ var scene, camera, renderer;
 var cubeGeometry, cube, material;
 var sphereGeometry, sphere;
 var objects = [];
+var lastTime;
 
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
@@ -13,9 +14,10 @@ scene.fog = new THREE.FogExp2(0x000000, 0.001);
 //CAMERA
 camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.x = 0;
-camera.position.y = -10;
+camera.position.y = 0;
 camera.position.z = 15;
-
+// camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 3000 );
+// camera.position.z = 15;
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //Setup renderer
@@ -53,86 +55,16 @@ scene.add( light, spotLight, pointLightOne);
 
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
-//Setup Orbit Controls
+//CONTROLS
+
+controls = new THREE.FirstPersonControls( camera );
+                controls.movementSpeed = 20;
+                controls.lookSpeed = 0.1;
+                controls.lookVertical = false;
+
+lastTime = performance.now();
 // var controls = new THREE.OrbitControls(camera, renderer.domElement);
 // var controlsEnabled = false;
-
-var moveForward = false;
-var moveBackward = false;
-var moveLeft = false;
-var moveRight = false;
-var canJump = false;
-
-var prevTime = performance.now();
-var velocity = new THREE.Vector3();
-
-var controls = new THREE.PointerLockControls( camera );
-scene.add( controls.getObject() );
-controlsEnabled = true;
-controls.enabled = true;
-
-var onKeyDown = function ( event ) {
-
-    switch ( event.keyCode ) {
-
-        case 38: // up
-        case 87: // w
-            moveForward = true;
-            break;
-
-        case 37: // left
-        case 65: // a
-            moveLeft = true; break;
-
-        case 40: // down
-        case 83: // s
-            moveBackward = true;
-            break;
-
-        case 39: // right
-        case 68: // d
-            moveRight = true;
-            break;
-
-        case 32: // space
-            if ( canJump === true ) velocity.y += 350;
-            canJump = false;
-            break;
-
-    }
-
-};
-
-var onKeyUp = function ( event ) {
-
-    switch( event.keyCode ) {
-
-        case 38: // up
-        case 87: // w
-            moveForward = false;
-            break;
-
-        case 37: // left
-        case 65: // a
-            moveLeft = false;
-            break;
-
-        case 40: // down
-        case 83: // s
-            moveBackward = false;
-            break;
-
-        case 39: // right
-        case 68: // d
-            moveRight = false;
-            break;
-
-    }
-
-};
-
-
-var raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 5 );
 
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
@@ -144,6 +76,16 @@ var onWindowResize = function(event) {
 
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
+
+
+//////////////////////////////////////////////////////////////////////////////////
+  //    oimo world              //
+  //////////////////////////////////////////////////////////////////////////////////
+  var world = new OIMO.World(1/120, 2, 8)
+  setInterval(function(){
+    world.step()
+  }, 1000/60);
+
 
 
 
@@ -258,9 +200,11 @@ var cubeRemove = function() {
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //RANDOM CUBE SYSTEM
-for ( var i = 0; i < 200; i ++ ) {
+var boxBody;
+var boxBodies = [];
+for ( var i = 0; i < 2000; i ++ ) {
 
-
+    var boxGeometry = new THREE.BoxGeometry(10, 10, 10);
     var randomColor = '0x' + Math.floor(Math.random()*16777215).toString(16);
     var cubeSystemMaterial = new THREE.MeshPhongMaterial( {  specular: 0x111111, 
                                                             emissive: 0x040404, 
@@ -268,37 +212,41 @@ for ( var i = 0; i < 200; i ++ ) {
                                                             shading: THREE.SmoothShading, 
                                                             opacity: 0.9, 
                                                             transparent: true });
-    var object = new THREE.Mesh( cubeGeometry, cubeSystemMaterial );
+    var object = new THREE.Mesh( boxGeometry, cubeSystemMaterial );
 
     
     object.material.color.setHex(randomColor);
 
-    object.position.x = Math.random() * 500 - 150;
+    object.position.x = (Math.random() * 1500 - 150) + 20 ;
     object.position.y = 0;
-    object.position.z = Math.random() * 500 - 150;
-
-    
+    object.position.z = (Math.random() * 1500 - 150) + 20;
 
     // object.rotation.x = Math.random() * 2 * Math.PI;
-    object.rotation.y = Math.random() * 2 * Math.PI;
+    // object.rotation.y = Math.random() * 2 * Math.PI;
     // object.rotation.z = Math.random() * 2 * Math.PI;
 
-    object.scale.x = Math.random() + 10;
-    object.scale.y = Math.random() + 100;
-    object.scale.z = Math.random() + 10;
+    // object.scale.x = Math.random() + 10;
+    // object.scale.y = Math.random() + 10;
+    // object.scale.z = Math.random() + 10;
 
-    object.name = 'CUBE';
-    objects.push(object);
+    object.castShadow = true;
+    object.name = 'CubeSystem';
     scene.add( object );
 
+    objects.push(object);
+    boxBody  = THREEx.Oimo.createBodyFromMesh(world, object, {move: false});
+    boxBodies.push(boxBody);
+
 }    
-
-
+var test = new THREE.Mesh(cubeGeometry, material);
+controls.object.add(test);
+var person = controls.object.children[0];
+var personView = THREEx.Oimo.createBodyFromMesh(world, person);
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //PARTICLE - Star Like in Background
 
-var sprite = THREE.ImageUtils.loadTexture("assets/textures/disc.png");
+var sprite = THREE.ImageUtils.loadTexture("<%= asset_path 'textures/disc.png' %>");
 var particleCount = 1000,
     particles = new THREE.Geometry(),
     particleMaterial = new THREE.PointsMaterial({
@@ -338,6 +286,7 @@ var particleSystem = new THREE.Points(
 scene.add(particleSystem);
 
 
+
 //===========================================================
 //===========================================================
 //===========================================================
@@ -347,6 +296,20 @@ var randomColor = '0x' + Math.floor(Math.random() * 16777215).toString(16);
 var render = function() {
     requestAnimationFrame(render);
 
+    //OIMO
+    // for (var i = 0; i < boxBodies.length; i++ ) {
+    //   THREEx.Oimo.updateObject3dWithBody(objects[i], boxBodies[i]);
+    //   if( objects[i].position.y < -20 ){
+    //       objects[i].position.x = (Math.random()-0.5)*20
+    //       objects[i].position.y = 100 + (Math.random()-0.5)*15
+    //       objects[i].position.z = (Math.random()-0.5)*20
+    //       boxBodies[i].resetPosition(objects[i].position.x, objects[i].position.y, objects[i].position.z);  
+    //     }
+
+    // }
+
+    THREEx.Oimo.updateObject3dWithBody(person, personView);
+
     var time = Date.now() * 0.00005;
     // particleSystem.rotation.y += 0.01;
     h = (360 * (1.0 + time) % 360) / 360;
@@ -354,6 +317,15 @@ var render = function() {
     pointLightOne.color.setHSL(h, 0.5, 0.5);
     particleMaterial.color.setHSL(h, 0.5, 0.5);
     // planeMaterial.color.setHSL( h, 0.5, 0.5 );
+
+    for (i = 0; i < objects.length; i++) {
+
+        var object = objects[i];
+
+            
+
+    }
+
 
     //Particle SYstem
     for (i = 0; i < scene.children.length; i++) {
@@ -397,84 +369,15 @@ var render = function() {
         }
     }
     
-    firstPersonRender();
-    
+    // firstPersonRender();
+    // collDetection();
+    var timeAlso = performance.now() / 1000;
+    controls.update( timeAlso - lastTime ); 
     // controls.update();
     renderer.render(scene, camera);
+    lastTime = timeAlso;
 };
 
- var intersects, INTERSECTED;
-
-var firstPersonRender = function() {
-    var mouse = new THREE.Vector2();
-
-    intersects = raycaster.intersectObjects( scene.children );
-    raycaster.set( controls.getObject(), controls.getObject() );
-
-    if ( intersects.length > 0 ) {
-
-        if ( INTERSECTED != intersects[ 0 ].object ) {
-
-            if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-
-            INTERSECTED = intersects[ 0 ].object;
-            INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-            INTERSECTED.material.emissive.setHex( 0xff0000 );
-
-        }
-
-    } else {
-
-        if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-
-        INTERSECTED = null;
-
-    }
-
-    if ( controlsEnabled ) {
-        // raycaster.ray.origin.copy( controls.getObject().position );
-        // raycaster.ray.origin.y -= 10; //height - entry point
-
-
-        // var intersections = raycaster.intersectObjects( objects );
-
-        // var isOnObject = intersections.length > 0;
-        var time = performance.now();
-        var delta = ( time - prevTime ) / 1000;
-
-        velocity.x -= velocity.x * 10.0 * delta;
-        velocity.z -= velocity.z * 10.0 * delta;
-        velocity.y -= 9.8 * 50.0 * delta; // 100.0 = mass - GRAVITY
-
-        if ( moveForward ) velocity.z -= 400.0 * delta;
-        if ( moveBackward ) velocity.z += 400.0 * delta;
-        if ( moveLeft ) velocity.x -= 400.0 * delta;
-        if ( moveRight ) velocity.x += 400.0 * delta;
-
-        // if ( isOnObject === true ) {
-        //     velocity.y = Math.max( 0, velocity.y );
-        //     velocity.z = Math.max( 0, velocity.z );
-            
-        //     canJump = true;
-        // }
-
-        controls.getObject().translateX( velocity.x * delta );
-        controls.getObject().translateY( velocity.y * delta );
-        controls.getObject().translateZ( velocity.z * delta );
-
-        if ( controls.getObject().position.y < 10 ) {
-
-            velocity.y = 0;
-            controls.getObject().position.y = 10;
-
-            canJump = true;
-
-        }
-
-        prevTime = time;
-
-    }
-}
 
 
 
@@ -482,14 +385,7 @@ $(document).ready(function() {
 
     render();
 
-    document.addEventListener( 'keydown', onKeyDown, false );
-    document.addEventListener( 'keyup', onKeyUp, false );
     window.addEventListener('resize', onWindowResize, false);
-    // window.addEventListener("mousemove", function () {
-    // scene.children[4].position.x = event.clientX - ( window.innerWidth / 2 );
-    // scene.children[4].position.y = ( event.clientY - ( window.innerHeight / 2 ) ) * -1;
-    
-    // });
 
     $('#addBoxes').on('click', function() {
 
