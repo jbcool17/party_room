@@ -16,7 +16,7 @@ scene = new THREE.Scene();
 camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.x = 2;
 camera.position.y = 88;
-camera.position.z = 150;
+camera.position.z = 15;
 // camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 3000 );
 // camera.position.z = 15;
 //++++++++++++++++++++++++++++++++++++++++++++
@@ -77,20 +77,39 @@ scene.add( light, spotLight, pointLightOne);
   var mesh  = new THREE.Mesh( geometry, material );
   mesh.position.y = -geometry.parameters.height/2
   mesh.rotation.x = .1;
-  scene.add(mesh)
+  scene.add(mesh);
+  var ground  = THREEx.Oimo.createBodyFromMesh(world, mesh, { move : false });
+
+  var box = new THREE.BoxGeometry(10,100,1);
+  var boxMesh = new THREE.Mesh( box, material);
+  boxMesh.position.y = 2;
+  boxMesh.position.z = 15;
+  boxMesh.rotation.y = .1;
+  scene.add(boxMesh);
+
+var boxBody  = THREEx.Oimo.createBodyFromMesh(world, boxMesh, { move: false });
+
   
-  var ground  = THREEx.Oimo.createBodyFromMesh(world, mesh, {
-    move : false
-  })
+  
+var sphereBody
+var bodies = [];
+var spheres = [];
+for (var i = 0; i < 10; i++ ) {
+  material = new THREE.MeshBasicMaterial( {color: 0x00ff00, wireframe: true });
+  sphereGeometry = new THREE.SphereGeometry( 1 );
+  mesh = new THREE.Mesh( sphereGeometry, material);
+  mesh.position.y = Math.random() * 20;
+  scene.add(mesh);
+
+  spheres.push(mesh);
+
+  sphereBody  = THREEx.Oimo.createBodyFromMesh(world, mesh);
+  bodies.push(sphereBody);
+  // sendToRender.push(THREEx.Oimo.updateObject3dWithBody(mesh, sphereBody));
 
 
-material = new THREE.MeshBasicMaterial( {color: 0x00ff00, wireframe: true });
-sphereGeometry = new THREE.SphereGeometry( 1 );
-mesh = new THREE.Mesh( sphereGeometry, material);
-mesh.position.y = 20;
-scene.add(mesh);
+}
 
-var sphereBody  = THREEx.Oimo.createBodyFromMesh(world, mesh)
   
 
 //
@@ -101,7 +120,22 @@ var render = function() {
 
     requestAnimationFrame(render);
     
+
+    for (var i = 0; i < bodies.length; i++ ) {
+      THREEx.Oimo.updateObject3dWithBody(spheres[i], bodies[i]);
+      if( spheres[i].position.y < -20 ){
+          spheres[i].position.x = (Math.random()-0.5)*20
+          spheres[i].position.y = 100 + (Math.random()-0.5)*15
+          spheres[i].position.z = (Math.random()-0.5)*20
+          bodies[i].resetPosition(spheres[i].position.x, spheres[i].position.y, spheres[i].position.z);  
+        }
+
+    }
+
+
     THREEx.Oimo.updateObject3dWithBody(mesh, sphereBody);
+    
+
     controls.update();
     
     renderer.render(scene, camera);
