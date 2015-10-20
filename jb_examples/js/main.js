@@ -66,83 +66,6 @@ lastTime = performance.now();
 // var controls = new THREE.OrbitControls(camera, renderer.domElement);
 // var controlsEnabled = false;
 
-// var moveForward = false;
-// var moveBackward = false;
-// var moveLeft = false;
-// var moveRight = false;
-// var canJump = false;
-
-// var prevTime = performance.now();
-// var velocity = new THREE.Vector3();
-
-// var controls = new THREE.PointerLockControls( camera );
-// scene.add( controls.getObject() );
-// controlsEnabled = true;
-// controls.enabled = true;
-
-// var onKeyDown = function ( event ) {
-
-//     switch ( event.keyCode ) {
-
-//         case 38: // up
-//         case 87: // w
-//             moveForward = true;
-//             break;
-
-//         case 37: // left
-//         case 65: // a
-//             moveLeft = true; break;
-
-//         case 40: // down
-//         case 83: // s
-//             moveBackward = true;
-//             break;
-
-//         case 39: // right
-//         case 68: // d
-//             moveRight = true;
-//             break;
-
-//         case 32: // space
-//             if ( canJump === true ) velocity.y += 350;
-//             canJump = false;
-//             break;
-
-//     }
-
-// };
-
-// var onKeyUp = function ( event ) {
-
-//     switch( event.keyCode ) {
-
-//         case 38: // up
-//         case 87: // w
-//             moveForward = false;
-//             break;
-
-//         case 37: // left
-//         case 65: // a
-//             moveLeft = false;
-//             break;
-
-//         case 40: // down
-//         case 83: // s
-//             moveBackward = false;
-//             break;
-
-//         case 39: // right
-//         case 68: // d
-//             moveRight = false;
-//             break;
-
-//     }
-
-// };
-
-
-// var raycaster = new THREE.Raycaster( new THREE.Vector3(), new THREE.Vector3( 0, - 1, 0 ), 0, 5 );
-
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //RESIZER
@@ -295,7 +218,7 @@ for ( var i = 0; i < 2000; i ++ ) {
     // object.scale.x = Math.random() + 10;
     // object.scale.y = Math.random() + 10;
     // object.scale.z = Math.random() + 10;
-
+    object.castShadow = true;
     object.name = 'CubeSystem';
     objects.push(object);
     scene.add( object );
@@ -424,112 +347,6 @@ var render = function() {
     lastTime = timeAlso;
 };
 
- var intersects, INTERSECTED, ray, noMove;
-
-var firstPersonRender = function() {
-    // var mouse = new THREE.Vector3();
-    // intersects = raycaster.intersectObjects( scene.children );
-    // raycaster.setFromCamera( mouse, camera );
-    // ray = raycaster.ray.origin.copy( controls.getObject().position );
-    
-
-    // if ( intersects.length > 0 ) {
-       
-    //     if ( INTERSECTED != intersects[ 0 ].object ) {
-
-    //         if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-
-    //         INTERSECTED = intersects[ 0 ].object;
-    //         INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-    //         INTERSECTED.material.emissive.setHex( 0xff0000 );
-
-    //     }
-    // } else {
-
-    //     if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
-    //     INTERSECTED = null;
-    // }
-
-
-    if ( controlsEnabled ) {
-
-        var obj = controls.getObject()
-        var children = scene.children
-
-        // console.log(obj.position.distanceTo( children[10].position ));
-        for (var i = 0; i < children.length; i++ ) {
-
-            if ( obj.position.distanceTo( children[i].position ) < 11 && children[i].name === 'CubeSystem') {
-                console.log(children[i].id,obj.position.distanceTo( children[i].position));
-                noMove = true;
-                canJump = true;
-            } else {
-                noMove = false;
-            }
-        }
-
-        if ( noMove === true ) {
-            velocity.y = Math.max( 0, velocity.y );
-            // velocity.z = Math.max( 0, velocity.z );
-            
-            canJump = true;
-        }
-        
-
-        var time = performance.now();
-        var delta = ( time - prevTime ) / 1000;
-
-        velocity.x -= velocity.x * 10.0 * delta;
-        velocity.z -= velocity.z * 10.0 * delta;
-        velocity.y -= 9.8 * 50.0 * delta; // 100.0 = mass - GRAVITY
-
-        if ( moveForward ) velocity.z -= 400.0 * delta;
-        if ( moveBackward ) velocity.z += 400.0 * delta;
-        if ( moveLeft ) velocity.x -= 400.0 * delta;
-        if ( moveRight ) velocity.x += 400.0 * delta;
-
-        
-
-        controls.getObject().translateX( velocity.x * delta );
-        controls.getObject().translateY( velocity.y * delta );
-        controls.getObject().translateZ( velocity.z * delta );
-
-        if ( controls.getObject().position.y < 10 ) {
-
-            velocity.y = 0;
-            controls.getObject().position.y = 10;
-
-            canJump = true;
-
-        }
-
-
-
-        prevTime = time;
-
-    }
-}
-
-
-var collDetection = function() {
-    var obj = controls.getObject()
-    var children = scene.children
-
-    // console.log(obj.position.distanceTo( children[10].position ));
-    for (var i = 0; i < children.length; i++ ) {
-
-        if ( obj.position.distanceTo( children[i].position ) < 10.5 && children[i].name === 'CubeSystem') {
-            console.log(children[i].name,obj.position.distanceTo( children[i].position));
-            velocity.y = Math.max( 0, velocity.y );
-            velocity.z = Math.max( 0, velocity.z );
-            
-            canJump = true;
-        } else {
-            noMove = false;
-        }
-    }
-    // return noMove;
-}
 
 
 
@@ -537,14 +354,7 @@ $(document).ready(function() {
 
     render();
 
-    // document.addEventListener( 'keydown', onKeyDown, false );
-    // document.addEventListener( 'keyup', onKeyUp, false );
     window.addEventListener('resize', onWindowResize, false);
-    // window.addEventListener("mousemove", function () {
-    // scene.children[4].position.x = event.clientX - ( window.innerWidth / 2 );
-    // scene.children[4].position.y = ( event.clientY - ( window.innerHeight / 2 ) ) * -1;
-    
-    // });
 
     $('#addBoxes').on('click', function() {
 

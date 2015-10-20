@@ -95,7 +95,7 @@ for ( var i = 0; i < 100; i ++ ) {
 
 	object.name = 'CUBE';
 
-	scene.add( object, glow );
+	scene.add( object );
 
 }
 
