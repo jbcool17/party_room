@@ -105,12 +105,8 @@ for (var i = 0; i < 10; i++ ) {
 
   sphereBody  = THREEx.Oimo.createBodyFromMesh(world, mesh);
   bodies.push(sphereBody);
-  // sendToRender.push(THREEx.Oimo.updateObject3dWithBody(mesh, sphereBody));
-
-
-}
-
   
+}
 
 //
 //RENDER
@@ -120,7 +116,7 @@ var render = function() {
 
     requestAnimationFrame(render);
     
-
+    //WORLD Updaters
     for (var i = 0; i < bodies.length; i++ ) {
       THREEx.Oimo.updateObject3dWithBody(spheres[i], bodies[i]);
       if( spheres[i].position.y < -20 ){
@@ -131,9 +127,6 @@ var render = function() {
         }
 
     }
-
-
-    THREEx.Oimo.updateObject3dWithBody(mesh, sphereBody);
     
 
     controls.update();

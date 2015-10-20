@@ -78,6 +78,16 @@ var onWindowResize = function(event) {
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////
+  //    oimo world              //
+  //////////////////////////////////////////////////////////////////////////////////
+  var world = new OIMO.World(1/120, 2, 8)
+  setInterval(function(){
+    world.step()
+  }, 1000/60);
+
+
+
 
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
@@ -190,9 +200,11 @@ var cubeRemove = function() {
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //RANDOM CUBE SYSTEM
+var boxBody;
+var boxBodies = [];
 for ( var i = 0; i < 2000; i ++ ) {
 
-    var sphereGeometry = new THREE.BoxGeometry(10, 10, 10);
+    var boxGeometry = new THREE.BoxGeometry(10, 10, 10);
     var randomColor = '0x' + Math.floor(Math.random()*16777215).toString(16);
     var cubeSystemMaterial = new THREE.MeshPhongMaterial( {  specular: 0x111111, 
                                                             emissive: 0x040404, 
@@ -200,7 +212,7 @@ for ( var i = 0; i < 2000; i ++ ) {
                                                             shading: THREE.SmoothShading, 
                                                             opacity: 0.9, 
                                                             transparent: true });
-    var object = new THREE.Mesh( sphereGeometry, cubeSystemMaterial );
+    var object = new THREE.Mesh( boxGeometry, cubeSystemMaterial );
 
     
     object.material.color.setHex(randomColor);
@@ -209,8 +221,6 @@ for ( var i = 0; i < 2000; i ++ ) {
     object.position.y = 0;
     object.position.z = (Math.random() * 1500 - 150) + 20;
 
-    
-
     // object.rotation.x = Math.random() * 2 * Math.PI;
     // object.rotation.y = Math.random() * 2 * Math.PI;
     // object.rotation.z = Math.random() * 2 * Math.PI;
@@ -218,14 +228,20 @@ for ( var i = 0; i < 2000; i ++ ) {
     // object.scale.x = Math.random() + 10;
     // object.scale.y = Math.random() + 10;
     // object.scale.z = Math.random() + 10;
+
     object.castShadow = true;
     object.name = 'CubeSystem';
-    objects.push(object);
     scene.add( object );
 
+    objects.push(object);
+    boxBody  = THREEx.Oimo.createBodyFromMesh(world, object, {move: false});
+    boxBodies.push(boxBody);
+
 }    
-
-
+var test = new THREE.Mesh(cubeGeometry, material);
+controls.object.add(test);
+var person = controls.object.children[0];
+var personView = THREEx.Oimo.createBodyFromMesh(world, person);
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //PARTICLE - Star Like in Background
@@ -270,6 +286,7 @@ var particleSystem = new THREE.Points(
 scene.add(particleSystem);
 
 
+
 //===========================================================
 //===========================================================
 //===========================================================
@@ -278,6 +295,20 @@ var randomColor = '0x' + Math.floor(Math.random() * 16777215).toString(16);
 //RENDER & ANIMATE SCENE
 var render = function() {
     requestAnimationFrame(render);
+
+    //OIMO
+    // for (var i = 0; i < boxBodies.length; i++ ) {
+    //   THREEx.Oimo.updateObject3dWithBody(objects[i], boxBodies[i]);
+    //   if( objects[i].position.y < -20 ){
+    //       objects[i].position.x = (Math.random()-0.5)*20
+    //       objects[i].position.y = 100 + (Math.random()-0.5)*15
+    //       objects[i].position.z = (Math.random()-0.5)*20
+    //       boxBodies[i].resetPosition(objects[i].position.x, objects[i].position.y, objects[i].position.z);  
+    //     }
+
+    // }
+
+    THREEx.Oimo.updateObject3dWithBody(person, personView);
 
     var time = Date.now() * 0.00005;
     // particleSystem.rotation.y += 0.01;
