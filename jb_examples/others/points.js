@@ -38,7 +38,7 @@ scene = new THREE.Scene();
 
 geometry = new THREE.Geometry();
 
-var texture = THREE.ImageUtils.loadTexture( 'cloud10.png', null, animate );
+var texture = THREE.ImageUtils.loadTexture( 'disc.png', null, animate );
 texture.magFilter = THREE.LinearMipMapLinearFilter;
 texture.minFilter = THREE.LinearMipMapLinearFilter;
 
@@ -62,7 +62,7 @@ material = new THREE.ShaderMaterial( {
 
 } );
 
-var plane = new THREE.Mesh( new THREE.PlaneGeometry( 100, 100 ) );
+var plane = new THREE.Mesh( new THREE.PlaneGeometry( 1, 1 ) );
 
 for ( var i = 0; i < 8000; i++ ) {
 
