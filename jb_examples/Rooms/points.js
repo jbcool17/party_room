@@ -1,10 +1,7 @@
 var container;
 var camera, scene, renderer;
 var mesh, geometry, material;
-
-var mouseX = 0, mouseY = 0;
 var start_time = Date.now();
-
 var windowHalfX = window.innerWidth / 2;
 var windowHalfY = window.innerHeight / 2;
 
@@ -12,28 +9,27 @@ container = document.createElement( 'div' );
 document.body.appendChild( container );
 
 // Bg gradient
-
 var canvas = document.createElement( 'canvas' );
 canvas.width = 32;
 canvas.height = window.innerHeight;
-
 var context = canvas.getContext( '2d' );
-
 var gradient = context.createLinearGradient( 0, 0, 0, canvas.height );
 gradient.addColorStop(0, "#1e4877");
 gradient.addColorStop(0.5, "#4584b4");
-
 context.fillStyle = gradient;
 context.fillRect(0, 0, canvas.width, canvas.height);
-
 container.style.background = 'url(' + canvas.toDataURL('image/png') + ')';
 container.style.backgroundSize = '32px 100%';
 
-//
-
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
+//CAMERA
 camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 3000 );
 camera.position.z = 6000;
 
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
+//SCENE
 scene = new THREE.Scene();
 
 geometry = new THREE.Geometry();
@@ -88,25 +84,16 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor(0x000000, 1); //0x4584b4
 container.appendChild( renderer.domElement );
 
-document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 window.addEventListener( 'resize', onWindowResize, false );
 
+function onWindowResize( event ) {
 
-  function onDocumentMouseMove( event ) {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize( window.innerWidth, window.innerHeight );
 
-    mouseX = ( event.clientX - windowHalfX ) * 1;
-    mouseY = ( event.clientY - windowHalfY ) * 1;
-
-  }
-
-  function onWindowResize( event ) {
-
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-
-    renderer.setSize( window.innerWidth, window.innerHeight );
-
-  }
+}
+  
 var speed = 0.1;
   function animate() {
 
@@ -114,8 +101,6 @@ var speed = 0.1;
 
     position = ( ( Date.now() - start_time ) * (speed * 10) ) % 8000;
 
-    // camera.position.x += ( mouseX - camera.position.x ) * 0.1;
-    // camera.position.y += ( - mouseY - camera.position.y ) * 0.1;
     camera.position.y = -50;
     camera.position.z = - position + 8000;
 
@@ -124,13 +109,11 @@ var speed = 0.1;
   }
 
   $(document).ready(function() {
+
     $('#velocity_value').text(speed);
+
     $('#velocity').on('change mouseclick', function() {
-
       speed = parseInt($('#velocity').val()) * 0.1;
-
       $('#velocity_value').text(speed);
-  
-
     });
   });

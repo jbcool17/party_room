@@ -1,11 +1,11 @@
 var scene, camera, renderer;
-// var cubeGeometry, cube, material;
-// var sphereGeometry, sphere;
+
+
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //Setup Scene and Effects
 scene = new THREE.Scene();
-// scene.fog = new THREE.FogExp2(0x000000, 0.001);
+
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //CAMERA
@@ -14,6 +14,12 @@ camera.position.x = 2;
 camera.position.y = 88;
 camera.position.z = 600;
 
+var onWindowResize = function(event) {
+
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //Setup renderer
@@ -26,6 +32,7 @@ renderer.setClearColor(0x000000, 1);
 document.body.appendChild(renderer.domElement);
 
 controls = new THREE.OrbitControls( camera, renderer.domElement );
+
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //LIGHTS
@@ -36,27 +43,26 @@ var spotLight = new THREE.SpotLight(0xffffff);
 spotLight.position.set(1, 500, 10);
 spotLight.intensity = 0.2
 spotLight.name = 'SpotLight';
+scene.add( spotLight );
 
 
 var pointLightOne = new THREE.PointLight(0xff0000);
 pointLightOne.position.set(1, 1, 10);
-
-scene.add( light, spotLight, pointLightOne);
+scene.add( pointLightOne );
 
 spotLight = new THREE.SpotLight(0xffffff);
 spotLight.position.set(1, 500, 3000);
 scene.add( spotLight ); 
 
 
-//////////////////////////////////////////////////////////////////////////////////
-  //    oimo world              //
-  //////////////////////////////////////////////////////////////////////////////////
-  var world = new OIMO.World(1/120, 2, 8);
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
+//OIMO WORLD
+var world = new OIMO.World(1/120, 2, 8);
 
-  //////////////////////////////////////////////////////////////////////////////////
-  //    Ground                //
-  //////////////////////////////////////////////////////////////////////////////////
-  
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
+//OBJECTS & OIMO
 var geometry  = new THREE.BoxGeometry(8000,100,8000); 
 var material  = new THREE.MeshPhongMaterial( { color: 0xffffff,
                           emissive: 0x072534,
@@ -66,8 +72,6 @@ var material  = new THREE.MeshPhongMaterial( { color: 0xffffff,
                         });
 var mesh  = new THREE.Mesh( geometry, material );
 mesh.position.y = -geometry.parameters.height/2
-// mesh.position.x = 1000;
-// mesh.position.z = 1000;
 mesh.rotation.x = .5;
 scene.add(mesh);
   
@@ -78,7 +82,8 @@ mesh.position.y = -30;
 scene.add(mesh);
 ground  = THREEx.Oimo.createBodyFromMesh(world, mesh, { move : false });
 
-//=================================
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
 //RAMP
 var rampMesh = new THREE.Mesh( new THREE.BoxGeometry(8000,200,10), material);
 rampMesh.position.y = -10
@@ -88,10 +93,9 @@ rampMesh.rotation.x = 1.3;
 scene.add(rampMesh);
 var rampBody = THREEx.Oimo.createBodyFromMesh(world, rampMesh, { move: false });
 
-
-//=================================
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
 //OBSTICLES
-
 var createStop = function (total) {
   for (var i = 0; i < total; i++ ) {
     var plusMinus = Math.floor(Math.random()*2) == 1 ? 1 : -1;
@@ -108,6 +112,8 @@ var createStop = function (total) {
   }
 }
   
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
 //SPHERES
 var sphereBody
 var bodies = [];
@@ -136,10 +142,9 @@ var createBall = function (total) {
   }
 }
 
-//=================================
+//++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++
 //RENDER
-//
-
 var render = function() {
 
     requestAnimationFrame(render);
@@ -157,7 +162,6 @@ var render = function() {
 
     }
     
-
     world.step()
     controls.update();
     renderer.render(scene, camera); 
@@ -165,8 +169,11 @@ var render = function() {
 
 $(document).ready(function() {
   render();
+  
+  window.addEventListener('resize', onWindowResize, false);
 
   $('#balls').text(spheres.length);
+  
   //UI Controls
   $('#drop').on('click', function() {
       var totalBalls = parseInt($('#total').val());

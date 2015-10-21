@@ -9,20 +9,18 @@ var onRenderFcts = [];
 //++++++++++++++++++++++++++++++++++++++++++++
 //Setup Scene and Effects
 scene = new THREE.Scene();
-// scene.fog = new THREE.FogExp2(0x000000, 0.001);
+
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //CAMERA
 camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-
 camera.position.x = 300;
 camera.position.y = 100;
 camera.position.z = 0;
 camera.rotation.x = 0;
 camera.rotation.y = 2;
 camera.rotation.z = 0;
-// camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 3000 );
-// camera.position.z = 15;
+
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //Setup renderer
@@ -51,22 +49,8 @@ var spotLight = new THREE.SpotLight( 0xaaaaaa);
 spotLight.position.set( 0, 350, 0 );
 spotLight.castShadow = true;
 scene.add( spotLight );
-// var spotLightHelper = new THREE.SpotLightHelper( spotLight );
-// scene.add( spotLightHelper );
 
-//++++++++++++++++++++++++++++++++++++++ 
-//++++++++++++++++++++++++++++++++++++++ 
-var path = "pisa/";
-        var format = '.jpg';
-        var urls = [
-          path + 'px' + format, path + 'nx' + format,
-          path + 'py' + format, path + 'ny' + format,
-          path + 'pz' + format, path + 'nz' + format
-        ];
-
-        var textureCube = THREE.ImageUtils.loadTextureCube( urls );
-        var material = new THREE.MeshBasicMaterial( { color: 0xffffff, envMap: textureCube } );
-
+//++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++
 var phong  = new THREE.MeshPhongMaterial( { color: 0xffffff, opacity: 0.5}); //0x111111
 var planeGeometry = new THREE.PlaneGeometry( 2000, 2000, 100, 100 );
