@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Party Room-Points</title>
-	<link rel="stylesheet" href="css/styles.css">
+	
 	<script src="js/lib/jquery.js"></script>
 	<script src="js/lib/underscore.min.js"></script>
 	<script src="js/lib/three.min.js"></script>
@@ -11,24 +11,22 @@
 	<script src="js/lib/cannon.min.js"></script>
 	<script src="js/lib/renderers/PhysicsRenderer.js"></script>	
 
+	<style>
+		.container {
+			width: 100%;
+			position: fixed;
+			top: 0px;
+			color: white;
+		}
+	</style>
+
 </head>
 <body>
-<header>
-		<ul>
-			<li><a href="#" id="fullscreenBtn">Go fullscreen</a></li>
-			<li><a href="audio.html">audio</a></li>
-			<li><a href="editor.html">Editor</a></li>
-			<li><a href="physics.html">physics</a></li>
-			<li><a href="points.html">Points - Clouds </a></li>
-			<li><a href="interaction.html">Interaction</a></li>
-			<li><a href="/">HOME</a></li>
-		</ul>
-	</header>
 	<div class="container">
-		<h1>POINTS - Clouds</h1>
+		<h1>POINTS - HYPERSPACE</h1>
 		<div class="display">
-			<label>FLOCK</label>
-			<input id="velocity" type="range" min="0" max="50" value="25" />
+			<label>SPEED</label>
+			<input id="velocity" type="range" min="1" max="10.0" value="1" />
 			<span id="velocity_value"></span>
 		</div>
 
@@ -71,7 +69,7 @@
 		</script>
 	
 
-	<script src="js/points.js"></script>
-	<script src="js/fullscreen.js"></script>
+	<script src="points.js"></script>
+	
 </body>
 </html>

@@ -38,11 +38,11 @@ scene = new THREE.Scene();
 
 geometry = new THREE.Geometry();
 
-var texture = THREE.ImageUtils.loadTexture( 'cloud10.png', null, animate );
+var texture = THREE.ImageUtils.loadTexture( 'disc.png', null, animate );
 texture.magFilter = THREE.LinearMipMapLinearFilter;
 texture.minFilter = THREE.LinearMipMapLinearFilter;
 
-var fog = new THREE.Fog( 0x4584b4, - 100, 3000 );
+var fog = new THREE.Fog( 0x00aaff, - 100, 3000 );
 
 material = new THREE.ShaderMaterial( {
 
@@ -62,12 +62,12 @@ material = new THREE.ShaderMaterial( {
 
 } );
 
-var plane = new THREE.Mesh( new THREE.PlaneGeometry( 100, 100 ) );
+var plane = new THREE.Mesh( new THREE.PlaneGeometry( 0.5, 0.5, 1.5, 10.5 ) );
 
-for ( var i = 0; i < 8000; i++ ) {
+for ( var i = 0; i < 18000; i++ ) {
 
   plane.position.x = Math.random() * 1000 - 500;
-  plane.position.y = - Math.random() * Math.random() * 200 - 15;
+  plane.position.y = - Math.random() * Math.random() * 400;
   plane.position.z = i;
   plane.rotation.z = Math.random() * Math.PI;
   plane.scale.x = plane.scale.y = Math.random() * Math.random() * 1.5 + 0.5;
@@ -85,7 +85,7 @@ scene.add( mesh );
 
 renderer = new THREE.WebGLRenderer( { antialias: false } );
 renderer.setSize( window.innerWidth, window.innerHeight );
-renderer.setClearColor(0x4584b4, 1);
+renderer.setClearColor(0x000000, 1); //0x4584b4
 container.appendChild( renderer.domElement );
 
 document.addEventListener( 'mousemove', onDocumentMouseMove, false );
@@ -107,17 +107,30 @@ window.addEventListener( 'resize', onWindowResize, false );
     renderer.setSize( window.innerWidth, window.innerHeight );
 
   }
-
+var speed = 0.1;
   function animate() {
 
     requestAnimationFrame( animate );
 
-    position = ( ( Date.now() - start_time ) * 1 ) % 8000;
+    position = ( ( Date.now() - start_time ) * (speed * 10) ) % 8000;
 
-    camera.position.x += ( mouseX - camera.position.x ) * 0.1;
-    camera.position.y += ( - mouseY - camera.position.y ) * 0.1;
+    // camera.position.x += ( mouseX - camera.position.x ) * 0.1;
+    // camera.position.y += ( - mouseY - camera.position.y ) * 0.1;
+    camera.position.y = -50;
     camera.position.z = - position + 8000;
 
     renderer.render( scene, camera );
 
   }
+
+  $(document).ready(function() {
+    $('#velocity_value').text(speed);
+    $('#velocity').on('change mouseclick', function() {
+
+      speed = parseInt($('#velocity').val()) * 0.1;
+
+      $('#velocity_value').text(speed);
+  
+
+    });
+  });
