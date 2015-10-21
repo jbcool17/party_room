@@ -37,8 +37,9 @@ const CubeWorldRender = React.createClass({
 		spotLight.shadowMapWidth = 1024;
 		spotLight.shadowMapHeight = 1024;
 		spotLight.angle = 1;
-		spotLight.exponent = 5;
-		spotLight.shadowDarkness = 1;
+		spotLight.exponent = 2;
+		spotLight.shadowDarkness = 0.3;
+		spotLight.intensity = 10;
 		spotLight.name = 'SpotLight';
 
 		var pointLightOne = new THREE.PointLight(0xff0000);
@@ -70,9 +71,18 @@ const CubeWorldRender = React.createClass({
 	  }, 1000/60);
 
 		//OBJECTS
+		depthMaterial = new THREE.MeshDepthMaterial({
+		});
+
 		phongMaterial = new THREE.MeshPhongMaterial({
 		    color: 0x156289,
 		    emissive: 0x072534
+		});
+
+		lambertMaterial = new THREE.MeshLambertMaterial({
+			color: 0x156289,
+			emissive: 0x072534,
+			transparent: true
 		});
 
 		material = new THREE.MeshBasicMaterial({
@@ -89,19 +99,37 @@ const CubeWorldRender = React.createClass({
 		var cubeCreate = function(cubeName) {
 	    this.cubeName = cubeName;		    
 	    this.cubeRotation = true;
-	    this.cube = new THREE.Mesh(cubeGeometry, material);	    
-	    this.cube.castShadow = true;		    
-	    this.cube.name = 'Cube'
-	    scene.add(this.cube);
-	    return this.cubeName;
-		}
+	    
+	    var lambertMaterial = new THREE.MeshLambertMaterial({
+				transparent: true,
+				opacity: Math.random() * ( 1 )
+			});
 
-		var cubeCreateTwo = function(cubeName) {
-	    this.cubeName = cubeName;		    
-	    this.cubeRotation = true;	    
-	    this.cube = new THREE.Mesh(cubeGeometry, material);		    
+			var randomColor = '0x' + Math.floor(Math.random()*16777215).toString(16);
+	    lambertMaterial.color.setHex( randomColor );
+
+	    this.cube = new THREE.Mesh(cubeGeometry, lambertMaterial);	    
 	    this.cube.castShadow = true;		    
-	    this.cube.name = 'CubeTwo';	    
+	    this.cube.name = 'Cube';
+
+	    // var randomColor = '0x' + Math.floor(Math.random()*16777215).toString(16);
+
+	    console.log("color changed");
+
+  		var speed = 0.08;
+    	var size = 3;
+    	var scale = Math.random() * ( size + size ) - size;
+    	
+    	// this.cube.material.opacity = 	Math.random() * ( 1 );
+
+    	this.cube.velocityX = Math.random() * ( speed + speed ) - speed;
+    	this.cube.velocityY = Math.random() * ( speed + speed ) - speed;
+    	this.cube.velocityZ = Math.random() * ( speed + speed ) - speed;
+
+    	this.cube.scale.x = scale;
+    	this.cube.scale.y = scale;
+    	this.cube.scale.z = scale;
+
 	    scene.add(this.cube);
 	    return this.cubeName;
 		}
@@ -119,7 +147,7 @@ const CubeWorldRender = React.createClass({
 
 		}
 
-		var test = new THREE.Mesh(cubeGeometry, material);
+		var test = new THREE.Mesh(cubeGeometry, lambertMaterial);
 		controls.object.add(test);
 
 		var person = controls.object.children[0];
@@ -170,10 +198,10 @@ const CubeWorldRender = React.createClass({
 		    THREEx.Oimo.updateObject3dWithBody(person, personView);
 
 		    var time = Date.now() * 0.00005;
-		    h = (360 * (1.0 + time) % 360) / 360;
-		    material.color.setHSL(h, 0.5, 0.5);
-		    pointLightOne.color.setHSL(h, 0.5, 0.5);
-		    particleMaterial.color.setHSL(h, 0.5, 0.5);
+		    // h = (360 * (1.0 + time) % 360) / 360;
+		    // material.color.setHSL(h, 0.5, 0.5);
+		    // pointLightOne.color.setHSL(h, 0.5, 0.5);
+		    // particleMaterial.color.setHSL(h, 0.5, 0.5);
 
 		    for (i = 0; i < objects.length; i++) {
 	        var object = objects[i];
@@ -192,18 +220,21 @@ const CubeWorldRender = React.createClass({
 
 		    //CUBE MOVEMENT - AND GROWING
 		    for (var i = 0; i < scene.children.length; i++) {
+
 	        if (scene.children[i].name === "Cube" && scene.children[i].id % 2 === 0) {
             scene.children[i].rotation.x += Math.random() * .1;
             scene.children[i].rotation.y += 0.01;
-            scene.children[i].position.x += 0.01;
-            scene.children[i].position.y += 0.01;
-            scene.children[i].scale.y += 0.01;
+            scene.children[i].position.x += scene.children[i].velocityX;
+            scene.children[i].position.y += scene.children[i].velocityY;
+            scene.children[i].position.z += scene.children[i].velocityZ;
+
 	        } else if (scene.children[i].name === "Cube" && scene.children[i].id % 2 === 1) {
             scene.children[i].rotation.x -= Math.random() * .1;
             scene.children[i].rotation.y -= 0.01;
-            scene.children[i].position.x -= 0.01;
-            scene.children[i].position.y += 0.01;
-            scene.children[i].scale.y += 0.01;
+            scene.children[i].position.x += scene.children[i].velocityX;
+            scene.children[i].position.y += scene.children[i].velocityY;
+            scene.children[i].position.z += scene.children[i].velocityZ;
+
 	        }
 		    }
 		    
@@ -240,7 +271,7 @@ const CubeWorldRender = React.createClass({
               }
             });
 	        }
-		    }, 2000);
+		    }, 800);
 
 		});
 
