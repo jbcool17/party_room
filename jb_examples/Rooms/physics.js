@@ -1,10 +1,6 @@
 var scene, camera, renderer;
-var cubeGeometry, cube, material;
-var sphereGeometry, sphere;
-var objects = [];
-var lastTime;
-var onRenderFcts = [];
-
+// var cubeGeometry, cube, material;
+// var sphereGeometry, sphere;
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //Setup Scene and Effects
@@ -17,8 +13,7 @@ camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight,
 camera.position.x = 2;
 camera.position.y = 88;
 camera.position.z = 600;
-// camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 3000 );
-// camera.position.z = 15;
+
 //++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++
 //Setup renderer
@@ -62,52 +57,56 @@ scene.add( spotLight );
   //    Ground                //
   //////////////////////////////////////////////////////////////////////////////////
   
-  var geometry  = new THREE.BoxGeometry(8000,100,8000); 
-  var material  = new THREE.MeshPhongMaterial( { color: 0xffffff,
-                            emissive: 0x072534,
-                            shininess: 100,
-                            side: THREE.DoubleSide,
-                            shading: THREE.SmoothShading
-                          });
-  var mesh  = new THREE.Mesh( geometry, material );
-  mesh.position.y = -geometry.parameters.height/2
-  mesh.position.x = 1000;
-  // mesh.position.z = 1000;
-  mesh.rotation.x = .5;
-  scene.add(mesh);
+var geometry  = new THREE.BoxGeometry(8000,100,8000); 
+var material  = new THREE.MeshPhongMaterial( { color: 0xffffff,
+                          emissive: 0x072534,
+                          shininess: 100,
+                          side: THREE.DoubleSide,
+                          shading: THREE.SmoothShading
+                        });
+var mesh  = new THREE.Mesh( geometry, material );
+mesh.position.y = -geometry.parameters.height/2
+// mesh.position.x = 1000;
+// mesh.position.z = 1000;
+mesh.rotation.x = .5;
+scene.add(mesh);
   
-  var ground  = THREEx.Oimo.createBodyFromMesh(world, mesh, { move : false });
-  geometry  = new THREE.BoxGeometry(8000,1,8000); 
-  mesh = new THREE.Mesh( geometry, material );  
-  mesh.position.y = -30;
-  scene.add(mesh);
-  ground  = THREEx.Oimo.createBodyFromMesh(world, mesh, { move : false });
+var ground  = THREEx.Oimo.createBodyFromMesh(world, mesh, { move : false });
+geometry  = new THREE.BoxGeometry(8000,1,8000); 
+mesh = new THREE.Mesh( geometry, material );  
+mesh.position.y = -30;
+scene.add(mesh);
+ground  = THREEx.Oimo.createBodyFromMesh(world, mesh, { move : false });
 
-
-
-var createStop = function (total) {
-  for (var i = 0; i < total; i++ ) {
-    var box = new THREE.BoxGeometry(100,100,1);
-    var boxMesh = new THREE.Mesh( box, material);
-    boxMesh.position.y = 0;
-    boxMesh.position.x = Math.random() * 5000;
-    boxMesh.position.z = Math.random() * 5000;
-    boxMesh.rotation.y = -.3;
-    scene.add(boxMesh);
-
-    var boxBody  = THREEx.Oimo.createBodyFromMesh(world, boxMesh, { move: false });
-  }
-}
-  
-
+//=================================
+//RAMP
 var rampMesh = new THREE.Mesh( new THREE.BoxGeometry(8000,200,10), material);
 rampMesh.position.y = -10
 rampMesh.position.z = 400;
 rampMesh.position.x = 500;
 rampMesh.rotation.x = 1.3;
 scene.add(rampMesh);
-
 var rampBody = THREEx.Oimo.createBodyFromMesh(world, rampMesh, { move: false });
+
+
+//=================================
+//OBSTICLES
+
+var createStop = function (total) {
+  for (var i = 0; i < total; i++ ) {
+    var plusMinus = Math.floor(Math.random()*2) == 1 ? 1 : -1;
+    var box = new THREE.BoxGeometry(100,100,1);
+    var material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+    var boxMesh = new THREE.Mesh( box, material);
+    boxMesh.position.y = 0;
+    boxMesh.position.x = plusMinus * Math.random() * 2000;
+    boxMesh.position.z = Math.random() * 3000;
+    boxMesh.rotation.y = -.3;
+    scene.add(boxMesh);
+
+    var boxBody  = THREEx.Oimo.createBodyFromMesh(world, boxMesh, { move: false });
+  }
+}
   
 //SPHERES
 var sphereBody
@@ -116,17 +115,18 @@ var spheres = [];
 
 var createBall = function (total) {
   for (var i = 0; i < total; i++ ) {
-    var material  = new THREE.MeshPhongMaterial( { color: 0x00ff00,
+    var plusMinus = Math.floor(Math.random()*2) == 1 ? 1 : -1;
+    var material  = new THREE.MeshPhongMaterial( { color: 0xffffff,
                               emissive: 0x072534,
                               shininess: 100,
                               side: THREE.DoubleSide,
-                              shading: THREE.SmoothShading
+                              shading: THREE.SmoothShading, wireframe:true
                             });
-    sphereGeometry = new THREE.SphereGeometry( 5 );
+    sphereGeometry = new THREE.SphereGeometry( 15 );
     mesh = new THREE.Mesh( sphereGeometry, material);
     mesh.position.y = 2000;
-    mesh.position.x = Math.random() * 2000;
-    mesh.position.z = -1000;
+    mesh.position.x = plusMinus * Math.random() * 2000;
+    mesh.position.z = -2000;
     scene.add(mesh);
 
     spheres.push(mesh);
@@ -136,7 +136,7 @@ var createBall = function (total) {
   }
 }
 
-//
+//=================================
 //RENDER
 //
 
@@ -147,28 +147,31 @@ var render = function() {
     //WORLD Updaters
     for (var i = 0; i < bodies.length; i++ ) {
       THREEx.Oimo.updateObject3dWithBody(spheres[i], bodies[i]);
+      var plusMinus = Math.floor(Math.random()*2) == 1 ? 1 : -1;
       if( spheres[i].position.y < -50 ){
-          spheres[i].position.x = Math.random() * 2000;
+          spheres[i].position.x = plusMinus * Math.random() * 2000;
           spheres[i].position.y = 2000;
-          spheres[i].position.z = -100;
+          spheres[i].position.z = -2000;
           bodies[i].resetPosition(spheres[i].position.x, spheres[i].position.y, spheres[i].position.z);  
         }
 
     }
     
+
     world.step()
     controls.update();
-    
-    renderer.render(scene, camera);
-    
+    renderer.render(scene, camera); 
 };
 
 $(document).ready(function() {
   render();
 
+  $('#balls').text(spheres.length);
+  //UI Controls
   $('#drop').on('click', function() {
       var totalBalls = parseInt($('#total').val());
       createBall(totalBalls);
+      $('#balls').text(spheres.length);
 
   });
 });
