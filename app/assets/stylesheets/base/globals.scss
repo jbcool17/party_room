@@ -1,0 +1,46 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:400,300,700);
+
+body {
+	background: $space-black;
+	font-family: 'Roboto Condensed', sans-serif;
+	margin: 0;
+	padding: 0;
+
+	a {
+		color: white;
+		text-decoration: none;
+
+		&:hover {
+			color: $color-green;
+		}
+	}
+}
+
+#globalNav {
+	z-index: 99;
+	background: $space-black;
+	position: fixed;
+
+	bottom: 0;
+	right: 	0;
+	left: 	0;
+
+	padding: $general-padding;
+
+	ul {
+		list-style: none;
+		text-align: center;
+		margin: 0;
+		padding: 0;
+
+		li {
+			display: inline-block;
+			margin: 0 $general-padding;
+		}
+	}
+}
+
+canvas {
+	width: 100vw;
+	height: 100vh;
+}
