@@ -40,7 +40,17 @@ body {
 	}
 }
 
-canvas {
+// ThreeJS Canvas
+
+.sceneCanvas {
 	width: 100vw;
 	height: 100vh;
+}
+
+// Mp3 Player
+
+#mp3_player {
+	position: fixed;
+	top: 0;
+	left: 0;
 }

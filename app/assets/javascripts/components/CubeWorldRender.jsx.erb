@@ -23,8 +23,11 @@ const CubeWorldRender = React.createClass({
 		renderer.shadowMap.type = THREE.BasicShadowMap;
 		renderer.setPixelRatio( window.devicePixelRatio );
 		renderer.setClearColor(0x000000, 1);
-		debugger;
-		document.body.insertBefore(renderer.domElement, document.body.firstChild);
+
+		$domElement = $(renderer.domElement);
+		$domElement.addClass('sceneCanvas');
+
+		document.body.insertBefore($domElement[0], document.body.firstChild);
 
 		//LIGHTS
 		var light = new THREE.AmbientLight(0x1111); // soft white light
