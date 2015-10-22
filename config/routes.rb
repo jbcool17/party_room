@@ -4,5 +4,6 @@ Rails.application.routes.draw do
   get '/hyperdrive' => 'pages#hyperdrive'
   get '/ballroom' => 'pages#ballroom'
   get '/physicsroom' => 'pages#physicsroom'
+  get '/cubeforest' => 'pages#cubeforest'
   resources :pages
 end
