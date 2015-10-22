@@ -42,8 +42,11 @@ controls = new THREE.OrbitControls( camera, renderer.domElement );
 var ambient = new THREE.AmbientLight( 0xffffff );
         scene.add( ambient );
 
-var pointLight = new THREE.PointLight( 0xffffff, 2 );
+var pointLight = new THREE.PointLight( 0xffaaff, 2 );
+pointLight.position.y = 100;
         scene.add( pointLight );
+        var help = new THREE.PointLightHelper( pointLight );
+        scene.add(help);
 
 var spotLight = new THREE.SpotLight( 0xaaaaaa);
 spotLight.position.set( 0, 350, 0 );
@@ -52,6 +55,19 @@ scene.add( spotLight );
 
 //++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++
+var cubeMat = new THREE.MeshPhongMaterial( { color: 0x00ff00, opacity: 0.5, emissive: 0x072534,
+                          shininess: 100,
+                          side: THREE.DoubleSide,
+                          shading: THREE.SmoothShading });
+
+var cubeGeometry = new THREE.CubeGeometry( 100, 50, 100);
+var cube = new THREE.Mesh( cubeGeometry, cubeMat );
+cube.position.x = 10;
+cube.position.z = 10;
+cube.position.y = 150;
+cube.castShadow = true;
+// scene.add(cube);
+
 var phong  = new THREE.MeshPhongMaterial( { color: 0xffffff, opacity: 0.5}); //0x111111
 var planeGeometry = new THREE.PlaneGeometry( 2000, 2000, 100, 100 );
         planeGeometry.rotateX( - Math.PI / 2 );
@@ -140,7 +156,7 @@ var render = function() {
 
 // Create a new instance of an audio object and adjust some of its properties
 var audio = new Audio();
-audio.src = '052406.mp3'; //'OZ-08092015.mp3';
+audio.src = '2001_Strauss.mp3';
 audio.controls = true;
 audio.loop = true;
 audio.autoplay = true;
