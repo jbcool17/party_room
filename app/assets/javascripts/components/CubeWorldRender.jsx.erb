@@ -139,8 +139,8 @@ const CubeWorldRender = React.createClass({
             sceneChild.rotation.y += sceneChild.rotateSpeed;
             sceneChild.rotation.z += sceneChild.rotateSpeed;
 					} else if ( sceneChild.name === "Main Light" ) {
-						sceneChild.position.x += 0.0002;
-						sceneChild.position.y += 0.0004;
+						sceneChild.position.x += sceneRotationSpeed;
+						sceneChild.position.y += sceneRotationSpeed * 2;
 					}
 				}
 
