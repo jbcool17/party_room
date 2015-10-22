@@ -18,8 +18,8 @@ const CubeWorldRender = React.createClass({
 // CAMERA SETUP 
 //====================================================================================================================
 
-		camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 3000 );
-		camera.position.z = 400;
+		camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 3000 );
+		camera.position.z = 800;
 
 //====================================================================================================================
 // RENDERER SETUP 
@@ -41,7 +41,7 @@ const CubeWorldRender = React.createClass({
 // LIGHTS 
 //====================================================================================================================
 
-		var mainLight = new THREE.HemisphereLight( 0xffffbb, 0x080820, 3 );
+		var mainLight = new THREE.HemisphereLight( 0x202020, 0x000000, 2 );
 		mainLight.name = "Main Light";
 		scene.add( mainLight );
 
@@ -84,13 +84,14 @@ const CubeWorldRender = React.createClass({
 // PARTICLES 
 //====================================================================================================================
 	
-	var particleCount = 500;
+	var particleCount = 1024;
 
 	for ( var i = 0; i < particleCount; i++ ) {
 
 		var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+
 		var pMaterial = new THREE.MeshLambertMaterial({
-		  color: Math.random() * 0x99ff22 + 0x24ff00,
+		  emissive: Math.random() * 0x808008 + 0x808080,
 		  blending: THREE.AdditiveBlending,
 		  transparent: true,
 		  opacity: Math.random()
@@ -135,9 +136,9 @@ const CubeWorldRender = React.createClass({
 				for (var i = 0; i < scene.children.length; i++) {
 					var sceneChild = scene.children[i];
 					if (sceneChild.name === "Cube Particle" ) {
-						sceneChild.rotation.x += sceneChild.rotateSpeed;
-            sceneChild.rotation.y += sceneChild.rotateSpeed;
-            sceneChild.rotation.z += sceneChild.rotateSpeed;
+						sceneChild.rotation.x += sceneChild.rotateSpeed + sceneRotationSpeed;
+            sceneChild.rotation.y += sceneChild.rotateSpeed + sceneRotationSpeed;
+            sceneChild.rotation.z += sceneChild.rotateSpeed + sceneRotationSpeed;
 					} else if ( sceneChild.name === "Main Light" ) {
 						sceneChild.position.x += sceneRotationSpeed;
 						sceneChild.position.y += sceneRotationSpeed * 2;
@@ -193,7 +194,7 @@ const CubeWorldRender = React.createClass({
 		    for (var i = 0; i < scene.children.length; i++) {
 					var sceneChild = scene.children[i];
 					if (sceneChild.name === "Cube Particle" ) {
-						sceneChild.scale.x = sceneChild.scale.y = sceneChild.scale.z = (fbc_array[i] / 4);
+						sceneChild.scale.x = sceneChild.scale.y = sceneChild.scale.z = Math.pow((fbc_array[i] / 20), 2);
 					}
 				}
 
