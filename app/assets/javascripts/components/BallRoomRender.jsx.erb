@@ -16,7 +16,7 @@ const BallRoomRender = React.createClass({
 		//++++++++++++++++++++++++++++++++++++++++++++
 		//CAMERA
 		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-		camera.position.x = 300;
+		camera.position.x = 170;
 		camera.position.y = 100;
 		camera.position.z = 0;
 		camera.rotation.x = 0;
@@ -40,6 +40,7 @@ const BallRoomRender = React.createClass({
 		document.body.insertBefore($domElement[0], document.body.firstChild);
 
 		controls = new THREE.OrbitControls( camera, renderer.domElement );
+		controls.autoRotate = true;
 		//++++++++++++++++++++++++++++++++++++++++++++
 		//++++++++++++++++++++++++++++++++++++++++++++
 		//LIGHTS
@@ -48,11 +49,14 @@ const BallRoomRender = React.createClass({
 		        scene.add( ambient );
 
 		var pointLight = new THREE.PointLight( 0xffffff, 2 );
-		        scene.add( pointLight );
+		pointLight.position.y = 100;
+		pointLight.intensity = 1;
+		scene.add( pointLight );
 
 		var spotLight = new THREE.SpotLight( 0xaaaaaa);
 		spotLight.position.set( 0, 350, 0 );
 		spotLight.castShadow = true;
+		//spotLight.shadowDarkness = 1;
 		scene.add( spotLight );
 
 		//++++++++++++++++++++++++++++++++++++++
@@ -67,47 +71,21 @@ const BallRoomRender = React.createClass({
 		        ground.receiveShadow = true;
 		        scene.add( ground );
 
-
-		var sphereHold = [];
-		var Z = 0;
-		// for (var k = 0; k < 10; k++ ){
-		//   var Y = 0;
-		//   for (var i = 0; i < 10; i++ ) {
-		//     var X = 0;
-		//     for (var j = 0; j < 10; j++ ) {
-		//       sphereGeometry = new THREE.SphereGeometry( 100, 32, 16 );
-		//       // sphereGeometry = new THREE.SphereGeometry( 5 );
-		//       var material = new THREE.MeshBasicMaterial( { color: 0xffffff, envMap: textureCube } );
-		//       mesh = new THREE.Mesh( sphereGeometry, material);
-		//       mesh.position.x = X
-		//       mesh.position.y = Y
-		//       mesh.position.z = Z;
-		//       mesh.scale.x = .1
-		//       mesh.scale.y = .1
-		//       mesh.scale.z = .1
-		//       scene.add(mesh);
-		//       sphereHold.push(mesh);
-		//       X +=40; 
-		//     }
-		//     Y += 20;
-		//   }
-		//   Z += 40
-		// }
-
 		var sphereHoldAudio = [];
 		var Z = 0;
 		for (var i = 0; i < 10; i++ ) {
 		    var X = 0;
 		    for (var j = 0; j < 10; j ++ ) {
-		      // sphereGeometry = new THREE.SphereGeometry( 100, 32, 16 );
-		      sphereGeometry = new THREE.SphereGeometry( 5 );
-		      var material = new THREE.MeshBasicMaterial( { color: 0xaaffff, wireframe: true } );
+		      sphereGeometry = new THREE.SphereGeometry( 50, 16, 8 );
+		      //sphereGeometry = new THREE.SphereGeometry( 5 );
+		      var material = new THREE.MeshBasicMaterial( { color: 0xaaffff, shininess: 100,
+														    shading: THREE.SmoothShading, wireframe: true } );
 		      mesh = new THREE.Mesh( sphereGeometry, material);
 		      mesh.position.x = X - 70;
 		      mesh.position.z = Z - 70;
-		      // mesh.scale.x = .1
-		      // mesh.scale.y = .1
-		      // mesh.scale.z = .1
+		      mesh.scale.x = .1
+		      mesh.scale.y = .1
+		      mesh.scale.z = .1
 		      mesh.castShadow = true;
 		      scene.add(mesh);
 		      sphereHoldAudio.push(mesh);
@@ -129,23 +107,20 @@ const BallRoomRender = React.createClass({
 		    var time = Date.now() * 0.00005;
 		    h = (360 * (1.0 + time) % 360) / 360;
 
-		    for (var i = 0; i < sphereHold.length; i++ ) {
-		      sphereHold[i].rotation.x += 0.01;
+		    for (var i = 0; i < sphereHoldAudio.length; i++ ) {
 		      
+		     sphereHoldAudio[i].rotation.x += 0.01;
 		    }
 
-		    // material.color.setHSL(h, 0.5, 0.5);
 		    pointLight.color.setHSL(h, 0.5, 0.5);
-		    // camera.lookAt(scene.position);
 		    controls.update();
-		    
 		    renderer.render(scene, camera);
 		    
 		};
 
 		// Create a new instance of an audio object and adjust some of its properties
 		var audio = new Audio();
-		audio.src = "<%= asset_path '052406.mp3' %>"; //'OZ-08092015.mp3';
+		audio.src = "<%= asset_path '2001_Strauss.mp3' %>";
 		audio.controls = true;
 		audio.loop = true;
 		audio.autoplay = true;
@@ -176,14 +151,13 @@ const BallRoomRender = React.createClass({
 
 		            sphereHoldAudio[i].material.color.setHSL(h * bar_height, 0.5, 0.5);
 
+
 		        } else {
 
 		          sphereHoldAudio[i].material.color.setHSL(h * bar_height, 0.5, 1);
+
 		        }
 		        
-		    // particleSystem.rotation.y += 0.01;
-		        
-		        // scene.children[0].scale.x = bar_width * Math.random();
 		        //  fillRect( x, y, width, height ) // Explanation of the parameters below
 		        ctx.fillRect(bar_x, canvas.height, bar_width, bar_height);
 		    }
