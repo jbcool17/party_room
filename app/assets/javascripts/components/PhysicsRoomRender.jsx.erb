@@ -10,10 +10,13 @@ const PhysicsRoomRender = React.createClass({
 		//++++++++++++++++++++++++++++++++++++++++++++
 		//++++++++++++++++++++++++++++++++++++++++++++
 		//CAMERA
-		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 50000);
-		camera.position.x = 2;
-		camera.position.y = 88;
-		camera.position.z = 600;
+		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+		camera.position.x = 1793;
+		camera.position.y = 50;
+		camera.position.z = 500;
+		camera.rotation.x = -0.1688;
+		camera.rotation.y = 1.27;
+		camera.rotation.z = 0.1616;
 
 		var onWindowResize = function(event) {
 
@@ -67,7 +70,7 @@ const PhysicsRoomRender = React.createClass({
 		//++++++++++++++++++++++++++++++++++++++++++++
 		//++++++++++++++++++++++++++++++++++++++++++++
 		//OBJECTS & OIMO
-		var geometry  = new THREE.BoxGeometry(8000,100,8000); 
+		var geometry  = new THREE.BoxGeometry(100000,100,8000); 
 		var material  = new THREE.MeshPhongMaterial( { color: 0xffffff,
 		                          emissive: 0x072534,
 		                          shininess: 100,
@@ -80,7 +83,7 @@ const PhysicsRoomRender = React.createClass({
 		scene.add(mesh);
 		  
 		var ground  = THREEx.Oimo.createBodyFromMesh(world, mesh, { move : false });
-		geometry  = new THREE.BoxGeometry(8000,1,8000); 
+		geometry  = new THREE.BoxGeometry(100000,1,8000); 
 		mesh = new THREE.Mesh( geometry, material );  
 		mesh.position.y = -30;
 		scene.add(mesh);
@@ -185,6 +188,13 @@ const PhysicsRoomRender = React.createClass({
 		      $('#balls').text(spheres.length);
 
 		  });
+		  $('#obsticles').on('click', function() {
+		      
+		      createStop(50);
+		      
+
+		  });
+		  
 		});
 
 		return (

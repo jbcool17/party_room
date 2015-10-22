@@ -116,11 +116,11 @@ const HyperDriveRender = React.createClass({
 
 	  $(document).ready(function() {
 
-	    $('#velocity_value').text(speed);
+	    $('#velocity_value').text(speed * 10);
 
 	    $('#velocity').on('change mouseclick', function() {
 	      speed = parseInt($('#velocity').val()) * 0.1;
-	      $('#velocity_value').text(speed);
+	      $('#velocity_value').text(speed * 10);
 	    });
 	  });
 
