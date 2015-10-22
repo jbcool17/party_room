@@ -51,11 +51,14 @@ body {
 
 #mp3_player {
 	position: fixed;
-	bottom: 60px;
+	bottom: 50px;
 	left: 0;
 	right: 0;
 	#analyser_render {
 		height: 0;
 		display: none;
+	}
+	audio {
+		width: 100%;
 	}
 }

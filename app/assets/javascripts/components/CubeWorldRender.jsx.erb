@@ -6,6 +6,7 @@ const CubeWorldRender = React.createClass({
 		var objects = [];
 		var lastTime;
 		var sceneRotationSpeed = 0.0002;
+		var playing = false;
 
 //====================================================================================================================
 // SCENE SETUP 
@@ -18,8 +19,8 @@ const CubeWorldRender = React.createClass({
 // CAMERA SETUP 
 //====================================================================================================================
 
-		camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 3000 );
-		camera.position.z = 800;
+		camera = new THREE.PerspectiveCamera( 80, window.innerWidth / window.innerHeight, 1, 4000 );
+		camera.position.z = 700;
 
 //====================================================================================================================
 // RENDERER SETUP 
@@ -41,7 +42,7 @@ const CubeWorldRender = React.createClass({
 // LIGHTS 
 //====================================================================================================================
 
-		var mainLight = new THREE.HemisphereLight( 0x202020, 0x000000, 2 );
+		var mainLight = new THREE.HemisphereLight( 0x202020, 0x000000, 5 );
 		mainLight.name = "Main Light";
 		scene.add( mainLight );
 
@@ -57,30 +58,6 @@ const CubeWorldRender = React.createClass({
 		}
 
 //====================================================================================================================
-// MATERIALS 
-//====================================================================================================================
-
-		depthMaterial = new THREE.MeshDepthMaterial({
-		});
-
-		phongMaterial = new THREE.MeshPhongMaterial({
-		    color: 0x156289,
-		    emissive: 0x072534
-		});
-
-		lambertMaterial = new THREE.MeshLambertMaterial({
-			color: 0x156289,
-			emissive: 0x072534,
-			transparent: true
-		});
-
-		material = new THREE.MeshBasicMaterial({
-		    name: 'green-wire',
-		    color: 0x00ff00,
-		    wireframe: true
-		});
-
-//====================================================================================================================
 // PARTICLES 
 //====================================================================================================================
 	
@@ -92,13 +69,10 @@ const CubeWorldRender = React.createClass({
 
 		var pMaterial = new THREE.MeshLambertMaterial({
 		  emissive: Math.random() * 0x808008 + 0x808080,
-		  blending: THREE.AdditiveBlending,
-		  transparent: true,
-		  opacity: Math.random()
+		  blending: THREE.AdditiveBlending
 		});
 
 		var particle = new THREE.Mesh( geometry, pMaterial );
-
 			particle.name = "Cube Particle";
 			particle.position.x = Math.random() * 2000 - 1000;
 			particle.position.y = Math.random() * 2000 - 1000;
@@ -115,7 +89,6 @@ const CubeWorldRender = React.createClass({
 //====================================================================================================================
 // RENDERING & ANIMATING
 //====================================================================================================================
-		
 		var render = function() {
 		    requestAnimationFrame(render); //loops
 
@@ -129,7 +102,6 @@ const CubeWorldRender = React.createClass({
 				// SCENE ROTATION AND CUBE ROTATION
 //======//============================================================================================================
 				
-
 				scene.rotation.x += sceneRotationSpeed;
 				scene.rotation.y += sceneRotationSpeed * 2;
 
@@ -179,7 +151,9 @@ const CubeWorldRender = React.createClass({
 	  audio.crossOrigin="anonymous";
 
     $(audio).on('canplay', function() {
-  		initMp3Player();
+    	if(!playing){
+	  		initMp3Player();
+	  	}
 		});
 
 		// Establish all variables that your Analyser will use
@@ -194,7 +168,13 @@ const CubeWorldRender = React.createClass({
 		    for (var i = 0; i < scene.children.length; i++) {
 					var sceneChild = scene.children[i];
 					if (sceneChild.name === "Cube Particle" ) {
-						sceneChild.scale.x = sceneChild.scale.y = sceneChild.scale.z = Math.pow((fbc_array[i] / 20), 2);
+
+						var scale = Math.pow((fbc_array[i] / 20), 2);
+						if ( scale > 5 ) {
+							sceneChild.scale.x = sceneChild.scale.y = sceneChild.scale.z = scale;
+						} else {
+							sceneChild.scale.x = sceneChild.scale.y = sceneChild.scale.z = 5;
+						}
 					}
 				}
 
@@ -205,11 +185,15 @@ const CubeWorldRender = React.createClass({
 
 				var avg = sum / fbc_array.length;
 
-				sceneRotationSpeed = 0.0006 * (avg / 10);
+				if (avg) {
+					sceneRotationSpeed = 0.0006 * (avg / 10);
+				} else {
+					sceneRotationSpeed = 0.0001
+				}
 		}
 
 		var initMp3Player = function (){
-
+				playing = true;
 		    document.getElementById('audio_box').appendChild(audio);
 		    context = new AudioContext(); // AudioContext object instance
 		    analyser = context.createAnalyser(); // AnalyserNode method
