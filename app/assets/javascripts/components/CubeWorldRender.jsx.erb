@@ -5,6 +5,7 @@ const CubeWorldRender = React.createClass({
 		var sphereGeometry, sphere;
 		var objects = [];
 		var lastTime;
+		var playing = false;
 
 		//Setup Scene and Effects
 		scene = new THREE.Scene();
@@ -252,10 +253,29 @@ const CubeWorldRender = React.createClass({
 
 		// Create a new instance of an audio object and adjust some of its properties
 		var audio = new Audio();
-		audio.src = "<%= asset_path '052406.mp3' %>";
+		// audio.src = "<%= asset_path '052406.mp3' %>";
+
+		// https://soundcloud.com/headphoneactivist/silent-flo
+		SC.initialize({
+	    client_id: '1c9f160d24af014540a03be9e0afa4c6',
+	    client_secret: 'f73aaa79abe4fe1d02e87030c98baa1b'
+	  });
+
+		SC.get('/resolve', {
+			url: 'http://soundcloud.com/headphoneactivist/silent-flo',
+			client_id: '1c9f160d24af014540a03be9e0afa4c6'
+		}).then(function(track) {
+			audio.src = track.stream_url + '?client_id=1c9f160d24af014540a03be9e0afa4c6';
+		});
+
 		audio.controls = true;
 		audio.loop = true;
 		audio.autoplay = true;
+	  audio.crossOrigin="anonymous";
+
+    $(audio).on('canplay', function() {
+  		initMp3Player();
+		});
 
 		// Establish all variables that your Analyser will use
 		var canvas, ctx, source, context, analyser, fbc_array, bars, bar_x, bar_width, bar_height;
@@ -279,6 +299,7 @@ const CubeWorldRender = React.createClass({
 		    }
 		}
 		var initMp3Player = function (){
+
 		    document.getElementById('audio_box').appendChild(audio);
 		    context = new AudioContext(); // AudioContext object instance
 		    analyser = context.createAnalyser(); // AnalyserNode method
@@ -297,7 +318,6 @@ const CubeWorldRender = React.createClass({
 
 		$(document).ready(function() {
 		    render();
-		    initMp3Player();
 
 		    window.addEventListener('resize', onWindowResize, false);
 		    $('#addBoxes').on('click', function() {

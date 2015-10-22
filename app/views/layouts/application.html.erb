@@ -3,6 +3,7 @@
 <head>
   <title>PartyRoom</title>
   <%= stylesheet_link_tag    'application', media: 'all' %>
+	<script src="https://connect.soundcloud.com/sdk/sdk-3.0.0.js"></script>
   <%= csrf_meta_tags %>
 </head>
 <body>
@@ -33,13 +34,7 @@
 
 	<%= yield %>
 
-
-	<div id="mp3_player">
-		<div id="audio_box"></div>
-			<canvas id="analyser_render"></canvas>
-		</div>
-	</div>
-	
+	<%= react_component('AudioPlayer') %>
 	
   <%= javascript_include_tag 'application' %>
 </body>
