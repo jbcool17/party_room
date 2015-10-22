@@ -7,14 +7,14 @@ const BallRoomRender = React.createClass({
 		var lastTime;
 		var onRenderFcts = [];
 
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//Setup Scene and Effects
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//Setup Scene and Effects
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		scene = new THREE.Scene();
 
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//CAMERA
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//CAMERA
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
 		camera.position.x = 170;
 		camera.position.y = 100;
@@ -23,9 +23,9 @@ const BallRoomRender = React.createClass({
 		camera.rotation.y = 2;
 		camera.rotation.z = 0;
 
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//Setup renderer
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//Setup Renderer
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		renderer = new THREE.WebGLRenderer();
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		renderer.shadowMap.enabled = true;
@@ -41,16 +41,16 @@ const BallRoomRender = React.createClass({
 
 		controls = new THREE.OrbitControls( camera, renderer.domElement );
 		controls.autoRotate = true;
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//LIGHTS
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//LIGHTS
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 		var ambient = new THREE.AmbientLight( 0xffffff );
 		        scene.add( ambient );
 
 		var pointLight = new THREE.PointLight( 0xffffff, 2 );
 		pointLight.position.y = 100;
-		pointLight.intensity = 1;
+		pointLight.intensity = .8;
 		scene.add( pointLight );
 
 		var spotLight = new THREE.SpotLight( 0xaaaaaa);
@@ -59,10 +59,11 @@ const BallRoomRender = React.createClass({
 		//spotLight.shadowDarkness = 1;
 		scene.add( spotLight );
 
-		//++++++++++++++++++++++++++++++++++++++
-		//++++++++++++++++++++++++++++++++++++++
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//OBJECTS
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		var phong  = new THREE.MeshPhongMaterial( { color: 0xffffff, opacity: 0.5}); //0x111111
-		var planeGeometry = new THREE.PlaneGeometry( 2000, 2000, 100, 100 );
+		var planeGeometry = new THREE.PlaneGeometry( 500, 500, 100, 100 );
 		        planeGeometry.rotateX( - Math.PI / 2 );
 		        materialPlane = new THREE.MeshBasicMaterial( { color: 0xffffff } ); //0x0011ff
 
@@ -96,10 +97,9 @@ const BallRoomRender = React.createClass({
 
 
 
-		//
-		//RENDER
-		//
-
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//RENDERER
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		var render = function() {
 
 		    requestAnimationFrame(render);
@@ -118,6 +118,9 @@ const BallRoomRender = React.createClass({
 		    
 		};
 
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//AUDIO
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		// Create a new instance of an audio object and adjust some of its properties
 		var audio = new Audio();
 		audio.src = "<%= asset_path '2001_Strauss.mp3' %>";
@@ -130,6 +133,7 @@ const BallRoomRender = React.createClass({
 
 		// Initialize the MP3 player after the page loads all of its HTML into the window
 		window.addEventListener("load", initMp3Player, false);
+
 		var frameLooper = function (){
 		    window.requestAnimationFrame(frameLooper);
 		    fbc_array = new Uint8Array(analyser.frequencyBinCount);
@@ -137,29 +141,35 @@ const BallRoomRender = React.createClass({
 		    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
 		    ctx.fillStyle = '#00CCFF'; // Color of the bars
 		    
-
-		    bars = 100;
-		    
-		    for (var i = 0; i < sphereHoldAudio.length; i++) {
+		    for (var i = 0; i < fbc_array.length; i++) {
 		        bar_x = i * 3;
-		        // bar_width = Math.random() * fbc_array[i] / 2;
+		        bar_width = Math.random() * fbc_array[i] / 2;
 		        bar_height = -fbc_array[i] / 2;
 		        sphereHoldAudio[i].position.y = -1 * (bar_height + 1);
-		        // sphereHold[i].position.x = bar_width * 10;
-		        // console.log(bar_height);
-		        if ( bar_height < -30 ) {
+		        
+		        
+		        if ( bar_height < -90 ) {
 
-		            sphereHoldAudio[i].material.color.setHSL(h * bar_height, 0.5, 0.5);
+					sphereHoldAudio[i].scale.x = -1 * (bar_height + 1);
+					sphereHoldAudio[i].scale.y = -1 * (bar_height + 1);
+					sphereHoldAudio[i].scale.z = -1 * (bar_height + 1);
 
+		        } else if (bar_height < -30 ){
+
+		        	sphereHoldAudio[i].material.color.setHSL(h * bar_height, 0.5, 0.5);
+		        	sphereHoldAudio[i].scale.x = .1;
+					sphereHoldAudio[i].scale.y = .1;
+					sphereHoldAudio[i].scale.z = .1;
 
 		        } else {
 
-		          sphereHoldAudio[i].material.color.setHSL(h * bar_height, 0.5, 1);
+		          	sphereHoldAudio[i].material.color.setHSL(h * bar_height, 0.5, 1);
+		          	//sphereHoldAudio[i].scale.x = .1;
+					//sphereHoldAudio[i].scale.y = .1;
+					//sphereHoldAudio[i].scale.z = .1;
 
 		        }
-		        
-		        //  fillRect( x, y, width, height ) // Explanation of the parameters below
-		        ctx.fillRect(bar_x, canvas.height, bar_width, bar_height);
+		       
 		    }
 		}
 		var initMp3Player = function (){
@@ -179,7 +189,6 @@ const BallRoomRender = React.createClass({
 
 		  render();
 		  initMp3Player();
-
 
 		});
 
