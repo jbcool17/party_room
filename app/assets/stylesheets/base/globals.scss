@@ -51,6 +51,11 @@ body {
 
 #mp3_player {
 	position: fixed;
-	top: 0;
+	bottom: 60px;
 	left: 0;
+	right: 0;
+	#analyser_render {
+		height: 0;
+		display: none;
+	}
 }
