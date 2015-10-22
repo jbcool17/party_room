@@ -1,0 +1,41 @@
+<div class="container">
+	<h1>POINTS - HYPERSPACE</h1>
+	<div class="display">
+		<label>SPEED</label>
+		<input id="velocity" type="range" min="1" max="10.0" value="1" />
+		<span id="velocity_value"></span>
+	</div>
+
+</div>
+
+<%= react_component('HyperDrive') %>
+
+<script id="vs" type="x-shader/x-vertex">
+	varying vec2 vUv;
+
+	void main() {
+		vUv = uv;
+		gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+	}
+</script>
+
+<script id="fs" type="x-shader/x-fragment">
+	uniform sampler2D map;
+	uniform vec3 fogColor;
+	uniform float fogNear;
+	uniform float fogFar;
+
+	varying vec2 vUv;
+
+	void main() {
+
+		float depth = gl_FragCoord.z / gl_FragCoord.w;
+		float fogFactor = smoothstep( fogNear, fogFar, depth );
+
+		gl_FragColor = texture2D( map, vUv );
+		gl_FragColor.w *= pow( gl_FragCoord.z, 20.0 );
+		gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );
+
+	}
+</script>
