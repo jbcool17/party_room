@@ -14,6 +14,7 @@
 //= require jquery_ujs
 //= require ./lib/three.min
 //= require ./lib/cannon.min
+//= require ./lib/Projector
 //= require ./lib/CanvasRenderer
 //= require ./lib/OrbitControls
 //= require ./lib/PointLockControls

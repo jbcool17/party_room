@@ -7,21 +7,38 @@ const CubeWorldRender = React.createClass({
 		var lastTime;
 		var playing = false;
 
-		//Setup Scene and Effects
+//====================================================================================================================
+// SCENE SETUP 
+//====================================================================================================================
+
 		scene = new THREE.Scene();
 		scene.fog = new THREE.FogExp2(0x000000, 0.001);
 
-		//CAMERA
-		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-		camera.position.x = -60;
-		camera.position.y = -10;
-		camera.position.z = 0;
+//====================================================================================================================
+// CAMERA SETUP 
+//====================================================================================================================
 
-		//Setup renderer
+		camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 3000 );
+		camera.position.z = 300;
+
+		// camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 1000);
+		// camera.position.x = 0;
+		// camera.position.y = 0;
+		// camera.position.z = 40;
+
+		// camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, - 1000, 1000 );
+		// camera.position.x = 0;
+		// camera.position.y = 0;
+		// camera.position.z = 0;
+
+//====================================================================================================================
+// RENDERER SETUP 
+//====================================================================================================================
+
 		renderer = new THREE.WebGLRenderer();
 		renderer.setSize(window.innerWidth, window.innerHeight);
-		renderer.shadowMap.enabled = true;
-		renderer.shadowMap.type = THREE.BasicShadowMap;
+		// renderer.shadowMap.enabled = true;
+		// renderer.shadowMap.type = THREE.BasicShadowMap;
 		renderer.setPixelRatio( window.devicePixelRatio );
 		renderer.setClearColor(0x000000, 1);
 
@@ -30,7 +47,10 @@ const CubeWorldRender = React.createClass({
 
 		document.body.insertBefore($domElement[0], document.body.firstChild);
 
-		//LIGHTS
+//====================================================================================================================
+// LIGHTS 
+//====================================================================================================================
+
 		var light = new THREE.AmbientLight(0x1111); // soft white light
 		scene.add(light);
 
@@ -52,15 +72,10 @@ const CubeWorldRender = React.createClass({
 
 		scene.add( light, spotLight, pointLightOne);
 
-		// CONTROLS
-		controls = new THREE.FirstPersonControls( camera );
-		                controls.movementSpeed = 15;
-		                controls.lookSpeed = 0.2;
-		                controls.lookVertical = true;
+//====================================================================================================================
+// RESIZER 
+//====================================================================================================================
 
-		lastTime = performance.now(); 
-
-		//RESIZER
 		var onWindowResize = function(event) {
 	    camera.aspect = window.innerWidth / window.innerHeight;
 	    camera.updateProjectionMatrix();
@@ -68,14 +83,10 @@ const CubeWorldRender = React.createClass({
 	    renderer.setSize(window.innerWidth, window.innerHeight);
 		}
 
+//====================================================================================================================
+// MATERIALS 
+//====================================================================================================================
 
-		// OIMO Physics
-	  var world = new OIMO.World(1/120, 2, 8)
-	  setInterval(function(){
-	    world.step()
-	  }, 1000/60);
-
-		//OBJECTS
 		depthMaterial = new THREE.MeshDepthMaterial({
 		});
 
@@ -96,160 +107,89 @@ const CubeWorldRender = React.createClass({
 		    wireframe: true
 		});
 
-		////
-		// Flying Cubes
-		cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+//====================================================================================================================
+// PARTICLES 
+//====================================================================================================================
+	
+	var particleCount = 500;
+	var particles = new THREE.Geometry();
 
-		var cubeHolder = []; //holds some cube info
-		var cubeCreate = function(cubeName) {
-	    this.cubeName = cubeName;		    
-	    this.cubeRotation = true;
-	    
-	    var lambertMaterial = new THREE.MeshLambertMaterial({
-				transparent: true,
-				opacity: Math.random() * ( 1 )
-			});
+	for ( var i = 0; i < particleCount; i++ ) {
 
-			var randomColor = '0x' + Math.floor(Math.random()*16777215).toString(16);
-	    lambertMaterial.color.setHex( randomColor );
-
-	    this.cube = new THREE.Mesh(cubeGeometry, lambertMaterial);	    
-	    this.cube.castShadow = true;		    
-	    this.cube.name = 'Cube';
-
-	    // var randomColor = '0x' + Math.floor(Math.random()*16777215).toString(16);
-
-	    console.log("color changed");
-
-  		var speed = 0.08;
-    	var size = 3;
-    	var scale = Math.random() * ( size + size ) - size;
-    	
-    	// this.cube.material.opacity = 	Math.random() * ( 1 );
-
-    	this.cube.velocityX = Math.random() * ( speed + speed ) - speed;
-    	this.cube.velocityY = Math.random() * ( speed + speed ) - speed;
-    	this.cube.velocityZ = Math.random() * ( speed + speed ) - speed;
-
-    	this.cube.scale.x = scale;
-    	this.cube.scale.y = scale;
-    	this.cube.scale.z = scale;
-
-	    scene.add(this.cube);
-	    return this.cubeName;
-		}
-
-		var cubeRemove = function() {
-      //removes all cubes - or at least trys to.
-	    for (var i = 0; i < scene.children.length; i++) {
-        for (var j = 0; j < cubeHolder.length; j++) {
-          if (scene.children[i].id === cubeHolder[j].cube.id) {
-            scene.children.splice(i, 1);
-            cubeHolder.splice(j, 1);
-          }
-        }
-      }
-
-		}
-
-		var test = new THREE.Mesh(cubeGeometry, lambertMaterial);
-		controls.object.add(test);
-
-		var person = controls.object.children[0];
-		var personView = THREEx.Oimo.createBodyFromMesh(world, person);
+		var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+		var pMaterial = new THREE.MeshLambertMaterial({
+		  color: Math.random() * 0x808008 + 0x808080,
+		  blending: THREE.AdditiveBlending,
+		  transparent: true,
+		  opacity: 0.8
+		});
 
 
-		// PARTICLE - Star Like in Background
-		var sprite = THREE.ImageUtils.loadTexture("<%= asset_path 'textures/disc.png' %>");
-		var particleCount = 1000,
-		    particles = new THREE.Geometry(),
-		    particleMaterial = new THREE.PointsMaterial({
-		        size: 6,
-		        sizeAttenuation: false,
-		        map: sprite,
-		        alphaTest: 0.5,
-		        transparent: true
-		    });
+		var particle = new THREE.Mesh( geometry, pMaterial );
 
-		particleMaterial.color.setHSL(1.0, 5, 0.7);
+			particle.position.x = Math.random() * 2000 - 1000;
+			particle.position.y = Math.random() * 2000 - 1000;
+			particle.position.z = Math.random() * 2000 - 1000;
+			particle.scale.x = particle.scale.y = particle.scale.z = Math.random() * 20 + 10;
 
-		for (var p = 0; p < particleCount; p++) {
-		    var pX = Math.random() * 500 - 250,
-		        pY = Math.random() * 500 - 250,
-		        pZ = Math.random() * 500 - 250,
-		        particle = new THREE.Vector3(pX, pY, pZ);
+		scene.add(particle);
+	}
 
+	// var particleSystem = new THREE.ParticleSystem(particles, pMaterial);
+	// scene.add( particleSystem );
 
-		    particle.velocity = new THREE.Vector3( 0, -Math.random(), 0 );
-		    // add it to the geometry
-		    particles.vertices.push( particle );
-		}
+//====================================================================================================================
+// RENDERING & ANIMATING
+//====================================================================================================================
 
-		// create the particle system
-		var particleSystem = new THREE.Points(
-		    particles,
-		    particleMaterial);
-
-		// add it to the scene
-		scene.add(particleSystem);
-
-		//===========================================================
-		var h;
-		var randomColor = '0x' + Math.floor(Math.random() * 16777215).toString(16);
-		//RENDER & ANIMATE SCENE
 		var render = function() {
-		    requestAnimationFrame(render);
-
-		    THREEx.Oimo.updateObject3dWithBody(person, personView);
+		    requestAnimationFrame(render); //loops
 
 		    var time = Date.now() * 0.00005;
-		    // h = (360 * (1.0 + time) % 360) / 360;
-		    // material.color.setHSL(h, 0.5, 0.5);
-		    // pointLightOne.color.setHSL(h, 0.5, 0.5);
-		    // particleMaterial.color.setHSL(h, 0.5, 0.5);
 
 		    for (i = 0; i < objects.length; i++) {
 	        var object = objects[i];
 		    }	
 
-		    //Particle System
-		    for (i = 0; i < scene.children.length; i++) {
-	        var object = scene.children[i];
-	        var pCount = particleCount;
-	        if (object instanceof THREE.Points) {
-            object.rotation.y += 0.0008;
-	        }
-		    }
+//======//============================================================================================================
+				// PARTICLE MOVEMENT 
+//======//============================================================================================================
 
-		    bar_height = -(Math.random() * 10 / 2);
+				scene.rotation.x += 0.0002;
+				scene.rotation.y += 0.0004;
+	
+//======//============================================================================================================
+				// CUBE MOVEMENT 
+//======//============================================================================================================
 
-		    //CUBE MOVEMENT - AND GROWING
-		    for (var i = 0; i < scene.children.length; i++) {
+		    // for (var i = 0; i < scene.children.length; i++) {
+	     //    if (scene.children[i].name === "Cube" && scene.children[i].id % 2 === 0) {
+      //       scene.children[i].rotation.x += Math.random() * .1;
+      //       scene.children[i].rotation.y += 0.01;
+      //       scene.children[i].position.x += scene.children[i].velocityX;
+      //       scene.children[i].position.y += scene.children[i].velocityY;
+      //       scene.children[i].position.z += scene.children[i].velocityZ;
 
-	        if (scene.children[i].name === "Cube" && scene.children[i].id % 2 === 0) {
-            scene.children[i].rotation.x += Math.random() * .1;
-            scene.children[i].rotation.y += 0.01;
-            scene.children[i].position.x += scene.children[i].velocityX;
-            scene.children[i].position.y += scene.children[i].velocityY;
-            scene.children[i].position.z += scene.children[i].velocityZ;
+	     //    } else if (scene.children[i].name === "Cube" && scene.children[i].id % 2 === 1) {
+      //       scene.children[i].rotation.x -= Math.random() * .1;
+      //       scene.children[i].rotation.y -= 0.01;
+      //       scene.children[i].position.x += scene.children[i].velocityX;
+      //       scene.children[i].position.y += scene.children[i].velocityY;
+      //       scene.children[i].position.z += scene.children[i].velocityZ;
 
-	        } else if (scene.children[i].name === "Cube" && scene.children[i].id % 2 === 1) {
-            scene.children[i].rotation.x -= Math.random() * .1;
-            scene.children[i].rotation.y -= 0.01;
-            scene.children[i].position.x += scene.children[i].velocityX;
-            scene.children[i].position.y += scene.children[i].velocityY;
-            scene.children[i].position.z += scene.children[i].velocityZ;
+	     //    }
+		    // }
 
-	        }
-		    }
-		    
-		    var timeAlso = performance.now() / 1000;
-		    controls.update( timeAlso - lastTime ); 
+//======//============================================================================================================
+				// RENDER THAT SHIT
+//======//============================================================================================================
 
 		    renderer.render(scene, camera);
-		    lastTime = timeAlso;
 		};
 
+//====================================================================================================================
+// AUDIO
+//====================================================================================================================
 
 		// Create a new instance of an audio object and adjust some of its properties
 		var audio = new Audio();
@@ -280,8 +220,6 @@ const CubeWorldRender = React.createClass({
 		// Establish all variables that your Analyser will use
 		var canvas, ctx, source, context, analyser, fbc_array, bars, bar_x, bar_width, bar_height;
 
-		// Initialize the MP3 player after the page loads all of its HTML into the window
-		window.addEventListener("load", initMp3Player, false);
 		var frameLooper = function (){
 		    window.requestAnimationFrame(frameLooper);
 		    fbc_array = new Uint8Array(analyser.frequencyBinCount);
@@ -298,6 +236,7 @@ const CubeWorldRender = React.createClass({
 		        ctx.fillRect(bar_x, canvas.height, bar_width, bar_height);
 		    }
 		}
+
 		var initMp3Player = function (){
 
 		    document.getElementById('audio_box').appendChild(audio);
@@ -314,37 +253,14 @@ const CubeWorldRender = React.createClass({
 		// frameLooper() animates any style of graphics you wish to the audio frequency
 		// Looping at the default frame rate that the browser provides(approx. 60 FPS)
 
-
+//====================================================================================================================
+// INITIALIZE
+//====================================================================================================================
 
 		$(document).ready(function() {
 		    render();
 
 		    window.addEventListener('resize', onWindowResize, false);
-		    $('#addBoxes').on('click', function() {
-	        var a = new cubeCreate(cubeHolder.length.toString());
-	        cubeHolder.push(a);
-	        console.log('CUBE HOLDER Length:', cubeHolder.length);
-		    });
-
-		    $('#removeBoxes').on('click', function() {
-	        cubeRemove();
-		    });
-
-		    setInterval(function() {
-	        var a = new cubeCreate(cubeHolder.length.toString());
-	        cubeHolder.push(a);
-
-	        if (cubeHolder.length === 100) {
-            var theCube = cubeHolder[0].cube.id;
-            cubeHolder.shift();
-            _.each(scene.children, function(object, i) {
-              if (scene.children[i].id === theCube) {
-                  scene.children.splice(i, 1);
-              }
-            });
-	        }
-		    }, 800);
-
 		});
 
 		return (<div></div>);
