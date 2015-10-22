@@ -42,7 +42,7 @@ const CubeWorldRender = React.createClass({
 // LIGHTS 
 //====================================================================================================================
 
-		var mainLight = new THREE.HemisphereLight( 0x202020, 0x000000, 5 );
+		var mainLight = new THREE.HemisphereLight( 0x404040, 0x101010, 10 );
 		mainLight.name = "Main Light";
 		scene.add( mainLight );
 
@@ -68,8 +68,8 @@ const CubeWorldRender = React.createClass({
 		var geometry = new THREE.BoxGeometry( 1, 1, 1 );
 
 		var pMaterial = new THREE.MeshLambertMaterial({
-		  emissive: Math.random() * 0x808008 + 0x808080,
-		  blending: THREE.AdditiveBlending
+		  color: Math.random() * 0x808008 + 0x808080,
+		  blending: THREE.AdditiveAlphaBlending
 		});
 
 		var particle = new THREE.Mesh( geometry, pMaterial );
@@ -170,10 +170,10 @@ const CubeWorldRender = React.createClass({
 					if (sceneChild.name === "Cube Particle" ) {
 
 						var scale = Math.pow((fbc_array[i] / 20), 2);
-						if ( scale > 5 ) {
+						if ( scale > 0 ) {
 							sceneChild.scale.x = sceneChild.scale.y = sceneChild.scale.z = scale;
 						} else {
-							sceneChild.scale.x = sceneChild.scale.y = sceneChild.scale.z = 5;
+							sceneChild.scale.x = sceneChild.scale.y = sceneChild.scale.z = 1;
 						}
 					}
 				}
