@@ -17,3 +17,18 @@
 @import "base/globals.scss";
 @import "styles/pages.scss";
 
+body {
+	color:white;
+}
+
+.devise {
+	max-width: 500px;
+	margin: 0 auto;
+	text-align: center;
+	padding-bottom: 25px;
+	border: 1px solid white;
+}
+
+.devise form * {
+	padding:10px;
+}
