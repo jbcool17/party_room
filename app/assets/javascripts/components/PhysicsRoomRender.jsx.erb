@@ -2,14 +2,14 @@ const PhysicsRoomRender = React.createClass({
 	render(){
 		var scene, camera, renderer;
 
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//Setup Scene and Effects
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//SCENE
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		scene = new THREE.Scene();
 
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//CAMERA
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//CAMERA
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
 		camera.position.x = 1793;
 		camera.position.y = 50;
@@ -24,9 +24,9 @@ const PhysicsRoomRender = React.createClass({
 		    camera.updateProjectionMatrix();
 		    renderer.setSize(window.innerWidth, window.innerHeight);
 		}
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//Setup renderer
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//RENDERER
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		renderer = new THREE.WebGLRenderer();
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		renderer.shadowMap.enabled = true;
@@ -40,11 +40,13 @@ const PhysicsRoomRender = React.createClass({
 
 		controls = new THREE.OrbitControls( camera, renderer.domElement );
 
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//LIGHTS
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//LIGHTS
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		var light = new THREE.AmbientLight(0x111111); // soft white light
 		scene.add(light);
+
+		var at
 
 		var spotLight = new THREE.SpotLight(0xffffff);
 		spotLight.position.set(1, 500, 10);
@@ -62,15 +64,16 @@ const PhysicsRoomRender = React.createClass({
 		scene.add( spotLight ); 
 
 
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//OIMO WORLD
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//OIMO WORLD - PYHSICS
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		var world = new OIMO.World(1/120, 2, 8);
+			world.gravity.y = -20;
 
 		//++++++++++++++++++++++++++++++++++++++++++++
 		//++++++++++++++++++++++++++++++++++++++++++++
 		//OBJECTS & OIMO
-		var geometry  = new THREE.BoxGeometry(100000,100,8000); 
+		var geometry  = new THREE.BoxGeometry(8000,100,8000); 
 		var material  = new THREE.MeshPhongMaterial( { color: 0xffffff,
 		                          emissive: 0x072534,
 		                          shininess: 100,
@@ -78,21 +81,22 @@ const PhysicsRoomRender = React.createClass({
 		                          shading: THREE.SmoothShading
 		                        });
 		var mesh  = new THREE.Mesh( geometry, material );
-		mesh.position.y = -geometry.parameters.height/2
+		//mesh.position.y = -geometry.parameters.height/2
 		mesh.rotation.x = .5;
 		scene.add(mesh);
 		  
 		var ground  = THREEx.Oimo.createBodyFromMesh(world, mesh, { move : false });
-		geometry  = new THREE.BoxGeometry(100000,1,8000); 
+		geometry  = new THREE.BoxGeometry(8000,5000,8000); 
 		mesh = new THREE.Mesh( geometry, material );  
-		mesh.position.y = -30;
+		mesh.position.y = -3000;
+		mesh.rotation.x = 0.01
 		scene.add(mesh);
 		ground  = THREEx.Oimo.createBodyFromMesh(world, mesh, { move : false });
 
 		//++++++++++++++++++++++++++++++++++++++++++++
 		//++++++++++++++++++++++++++++++++++++++++++++
 		//RAMP
-		var rampMesh = new THREE.Mesh( new THREE.BoxGeometry(8000,200,10), material);
+		var rampMesh = new THREE.Mesh( new THREE.BoxGeometry(8000,600,10), material);
 		rampMesh.position.y = -10
 		rampMesh.position.z = 400;
 		rampMesh.position.x = 500;
@@ -109,7 +113,7 @@ const PhysicsRoomRender = React.createClass({
 		    var box = new THREE.BoxGeometry(100,100,1);
 		    var material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
 		    var boxMesh = new THREE.Mesh( box, material);
-		    boxMesh.position.y = 0;
+		    boxMesh.position.y = -460;
 		    boxMesh.position.x = plusMinus * Math.random() * 2000;
 		    boxMesh.position.z = Math.random() * 3000;
 		    boxMesh.rotation.y = -.3;
@@ -149,18 +153,21 @@ const PhysicsRoomRender = React.createClass({
 		  }
 		}
 
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//++++++++++++++++++++++++++++++++++++++++++++
-		//RENDER
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//RENDER
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		var render = function() {
 
 		    requestAnimationFrame(render);
 		    
 		    //WORLD Updaters
 		    for (var i = 0; i < bodies.length; i++ ) {
+
 		      THREEx.Oimo.updateObject3dWithBody(spheres[i], bodies[i]);
+
 		      var plusMinus = Math.floor(Math.random()*2) == 1 ? 1 : -1;
-		      if( spheres[i].position.y < -50 ){
+		      
+		      if( spheres[i].position.y < -2000 ){
 		          spheres[i].position.x = plusMinus * Math.random() * 2000;
 		          spheres[i].position.y = 2000;
 		          spheres[i].position.z = -2000;
@@ -173,6 +180,7 @@ const PhysicsRoomRender = React.createClass({
 		    controls.update();
 		    renderer.render(scene, camera); 
 		};
+
 
 		$(document).ready(function() {
 		  render();
