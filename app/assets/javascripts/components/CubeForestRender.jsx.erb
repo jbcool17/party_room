@@ -45,7 +45,7 @@ const CubeForestRender = React.createClass({
 			spotLight.name = 'SpotLight';
 
 		var pointLightOne = new THREE.PointLight(0xff0000);
-			pointLightOne.position.set(1, 1, 10);
+			pointLightOne.position.set(1, 10, 10);
 
 		scene.add( light, spotLight, pointLightOne);
 
@@ -55,7 +55,7 @@ const CubeForestRender = React.createClass({
 
 		var controls = new THREE.FirstPersonControls( camera );
 		        controls.movementSpeed = 40;
-		        controls.lookSpeed = 0.1;
+		        controls.lookSpeed = 0.01;
 		        controls.lookVertical = false;
 
 		var lastTime = performance.now();
@@ -71,17 +71,12 @@ const CubeForestRender = React.createClass({
 		}
 
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//Setup OIMO WORLD
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		var world = new OIMO.World(1/120, 2, 8)
-		setInterval(function(){ world.step() }, 1000/60);
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//boxHolder
+//Growing Cubes
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		var phongMaterial = new THREE.MeshPhongMaterial({ color: 0x156289, emissive: 0x072534 });
-		var material = new THREE.MeshBasicMaterial({ name: 'green-wire', 
+		var cubeMaterial = new THREE.MeshBasicMaterial({ name: 'green-wire', 
 												color: 0x00ff00, 
 												wireframe: true });
 												
@@ -110,12 +105,12 @@ const CubeForestRender = React.createClass({
 		
 			this.cubeName = cubeName;
 			this.cubeRotation = true;
-			this.cube = new THREE.Mesh(cubeGeometry, material);
+			this.cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
 			this.cube.castShadow = true;
 			this.cube.name = 'Cube'
 			scene.add(this.cube);
 
-			return this.cubeName;
+			//return this.cubeName;
 		}
 
 		var cubeRemove = function() {
@@ -141,27 +136,26 @@ const CubeForestRender = React.createClass({
 		for ( var i = 0; i < 1000; i ++ ) {
 
 			var boxGeometry = new THREE.BoxGeometry(10, 10, 10);
-			var randomColor = '0x' + Math.floor(Math.random()*16777215).toString(16);
-			var boxSystemMaterial = new THREE.MeshPhongMaterial( { specular: 0x111111, 
-			                                                    emissive: 0x010101, 
-			                                                    shininess: 100, 
-			                                                    shading: THREE.SmoothShading, 
-			                                                    opacity: 0.9, 
-			                                                    transparent: true });
+			
+			//var randomColor = '0x' + Math.floor(Math.random()*16777215).toString(16);
+
+			var boxSystemMaterial = new THREE.MeshPhongMaterial({ color: 0x000000, shading: THREE.SmoothShading, 
+																	shinniness:100, 
+																	specular: 0xc04b4b, reflectivity: 100 });
+
 			//Set Positive or Negative
 			var plusMinus = Math.floor(Math.random()*2) == 1 ? 1 : -1;
-
+			
 			var box = new THREE.Mesh( boxGeometry, boxSystemMaterial );
-				box.material.color.setHex(randomColor);
 				box.position.x = (Math.random() * 1000) * plusMinus + 100;
 				box.position.y = 0;
-				box.position.z = (Math.random() * 1000) +100;
+				box.position.z = (Math.random() * 1000) + 100;
 				box.scale.y = Math.random() + 5;
-				box.castShadow = true;
+				box.scale.x = 1.5;
 				box.name = 'boxSystem';
 
 			scene.add( box );
-			boxBody = THREEx.Oimo.createBodyFromMesh(world, box, {move: false});
+			
 
 			//adding THREE & Oimo Boxes to arrays
 			boxHolder.push( box );
@@ -227,14 +221,16 @@ const CubeForestRender = React.createClass({
 			h = (360 * (1.0 + time) % 360) / 360;
 			
 
-			material.color.setHSL(h, 0.5, 0.5);
-			particleMaterial.color.setHSL(h, 0.5, 0.5);
-	
+			cubeMaterial.color.setHSL(h, 0.5, 0.5);
+			
+			
+			// BOX System
 			for (i = 0; i < boxHolder.length; i++) {
 				var object = boxHolder[i];
 			}
 
 			//Particle System
+			particleMaterial.color.setHSL(h, 0.5, 0.5);
 			for ( i = 0; i < scene.children.length; i++ ) {
 
 				var object = scene.children[i];
@@ -248,7 +244,7 @@ const CubeForestRender = React.createClass({
 				
 				if (object instanceof THREE.PointLight) {
 
-			  	  object.color.setHSL(h, 0.5, 0.5);
+			  	 object.color.setHSL(h, 0.5, 0.5);
 
 				}
 
@@ -290,7 +286,7 @@ const CubeForestRender = React.createClass({
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		// Create a new instance of an audio object and adjust some of its properties
 		var audio = new Audio();
-		audio.src = "<%= asset_path 'Cool-2.mp3' %>";
+		audio.src = "<%= asset_path 'AlsoSprachZarathustra.mp3' %>";
 		audio.controls = true;
 		audio.loop = true;
 		audio.autoplay = true;
@@ -298,61 +294,56 @@ const CubeForestRender = React.createClass({
 		// Establish all variables that your Analyser will use
 		var canvas, ctx, source, context, analyser, fbc_array, bars, bar_width, bar_height;
 
-		window.addEventListener("load", initMp3Player, false);
+		window.addEventListener("load", initAudioPlayer, false);
+
 		var frameLooper = function (){
+
 		    window.requestAnimationFrame(frameLooper);
 		    
 		    fbc_array = new Uint8Array(analyser.frequencyBinCount);
 		    analyser.getByteFrequencyData(fbc_array);
 		    
 		    
-		    for (var i = 0; i < fbc_array.length; i++) {
+		    for (var i = 0; i < boxHolder.length; i++) {
 		       	
 		       	var time = Date.now() * 0.00005;
 				h = (360 * (1.0 + time) % 360) / 360;
 
-		        bar_width = Math.random() * fbc_array[i] / 2;
 		        bar_height = fbc_array[i];
-		        
+
 		        boxHolder[i].position.y = bar_height + 1;
-		        
-		        if ( bar_height < -100 ) {
 
+		        if ( bar_height > 100 ) {
 		        	boxHolder[i].material.color.setHSL(h * bar_height, 0.5, 0.5);
-					material.color.setHSL(h, 0.5, 0.5);
-
 		        } else {
-		        	
-		        	//boxHolder[i].material.color.setHSL(h * bar_height, 0.5, 1);
+
+		        	//boxHolder[i].meterial.color.setRGB(0,0,0);
 
 		        }
+		
+		       
+		        
 		    }
 		}
 
-		var initMp3Player = function (){
+		var initAudioPlayer = function (){
 
 		    document.getElementById('audio_box').appendChild(audio);
 		    context = new AudioContext(); // AudioContext object instance
 		    analyser = context.createAnalyser(); // AnalyserNode method
-		    canvas = document.getElementById( 'analyser_render' );
-		    ctx = canvas.getContext('2d');
+		    //canvas = document.getElementById( 'analyser_render' );
+		    //ctx = canvas.getContext('2d');
 		    // Re-route audio playback into the processing graph of the AudioContext
 		    source = context.createMediaElementSource( audio ); 
 		    source.connect(analyser);
 		    analyser.connect(context.destination);
+
 		    frameLooper();
 		}
 
-
-		$(document).ready(function() {
-
-			render();
-			initMp3Player();
-
-			setInterval(function() {
+		setInterval( function() {
 				var a = new cubeCreate(cubeHolder.length.toString());
 				cubeHolder.push(a);
-
 
 				if (cubeHolder.length === 100) {
 
@@ -364,12 +355,16 @@ const CubeForestRender = React.createClass({
 				            scene.children.splice(i, 1);
 				        }
 				    });
-				    console.log('A CUBE HAS BEEN REMOVED');
-
-				    // cubeRemove();
+				    
 				}
 			}, 2000);
 
+
+		$(document).ready(function() {
+
+			render();
+
+			initAudioPlayer();
 
 			window.addEventListener('resize', onWindowResize, false);
 
