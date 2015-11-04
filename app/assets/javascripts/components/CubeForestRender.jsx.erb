@@ -64,9 +64,10 @@ const CubeForestRender = React.createClass({
 //RESIZER
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		var onWindowResize = function(event) {
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
-			renderer.setSize(window.innerWidth, window.innerHeight);
+	    	camera.aspect = window.innerWidth / window.innerHeight;
+	    	camera.updateProjectionMatrix();
+
+	    	renderer.setSize(window.innerWidth, window.innerHeight);
 		}
 
 
@@ -213,7 +214,7 @@ const CubeForestRender = React.createClass({
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //RENDERER
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		var h, time;
+		var h;
 		var randomColor = '0x' + Math.floor(Math.random() * 16777215).toString(16);
 		
 		//RENDER & ANIMATE SCENE
@@ -222,7 +223,7 @@ const CubeForestRender = React.createClass({
 			requestAnimationFrame(render);
 			
 			//Time
-			time = Date.now() * 0.00005;
+			var time = Date.now() * 0.00005;
 			h = (360 * (1.0 + time) % 360) / 360;
 			
 
@@ -283,44 +284,47 @@ const CubeForestRender = React.createClass({
 			
 			lastTime = timeAlso;
 		};
-		
+
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //AUDIO
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		// Create a new instance of an audio object and adjust some of its properties
 		var audio = new Audio();
-		audio.src = "<%= asset_path 'AlsoSprachZarathustra.mp3' %>";
+		audio.src = "<%= asset_path 'Cool-2.mp3' %>";
 		audio.controls = true;
 		audio.loop = true;
 		audio.autoplay = true;
 
 		// Establish all variables that your Analyser will use
-		var canvas, ctx, source, context, analyser, fbc_array, bars, bar_x, bar_width, bar_height;
+		var canvas, ctx, source, context, analyser, fbc_array, bars, bar_width, bar_height;
 
-		// Initialize the MP3 player after the page loads all of its HTML into the window
 		window.addEventListener("load", initMp3Player, false);
 		var frameLooper = function (){
 		    window.requestAnimationFrame(frameLooper);
+		    
 		    fbc_array = new Uint8Array(analyser.frequencyBinCount);
 		    analyser.getByteFrequencyData(fbc_array);
-		    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-		    ctx.fillStyle = '#00CCFF'; // Color of the bars
-		    bars = 100;
 		    
-		    for (var i = 0; i < boxHolder.length; i++) {
-		        bar_x = i * 3;
-		        bar_width = Math.random() * fbc_array[i] / 2;
-		        bar_height = -fbc_array[i];
-		        var time = Date.now() * 0.00005;
+		    
+		    for (var i = 0; i < fbc_array.length; i++) {
+		       	
+		       	var time = Date.now() * 0.00005;
 				h = (360 * (1.0 + time) % 360) / 360;
-				
-		        boxHolder[i].position.y = -1 * (bar_height + 1);
+
+		        bar_width = Math.random() * fbc_array[i] / 2;
+		        bar_height = fbc_array[i];
+		        
+		        boxHolder[i].position.y = bar_height + 1;
 		        
 		        if ( bar_height < -100 ) {
+
 		        	boxHolder[i].material.color.setHSL(h * bar_height, 0.5, 0.5);
 					material.color.setHSL(h, 0.5, 0.5);
+
 		        } else {
+		        	
 		        	//boxHolder[i].material.color.setHSL(h * bar_height, 0.5, 1);
+
 		        }
 		    }
 		}
@@ -345,22 +349,6 @@ const CubeForestRender = React.createClass({
 			render();
 			initMp3Player();
 
-			window.addEventListener('resize', onWindowResize, false);
-
-			$('#addBoxes').on('click', function() {
-
-				var a = new cubeCreate(cubeHolder.length.toString());
-				cubeHolder.push(a);
-				console.log('CUBE HOLDER Length:', cubeHolder.length);
-
-			});
-
-			$('#removeBoxes').on('click', function() {
-
-			cubeRemove();
-
-			});
-
 			setInterval(function() {
 				var a = new cubeCreate(cubeHolder.length.toString());
 				cubeHolder.push(a);
@@ -381,6 +369,9 @@ const CubeForestRender = React.createClass({
 				    // cubeRemove();
 				}
 			}, 2000);
+
+
+			window.addEventListener('resize', onWindowResize, false);
 
 		});
 

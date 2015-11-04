@@ -41,6 +41,17 @@ const BallRoomRender = React.createClass({
 
 		controls = new THREE.OrbitControls( camera, renderer.domElement );
 		controls.autoRotate = true;
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//RESIZER
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		var onWindowResize = function(event) {
+	    	camera.aspect = window.innerWidth / window.innerHeight;
+	    	camera.updateProjectionMatrix();
+
+	    	renderer.setSize(window.innerWidth, window.innerHeight);
+		}
+		
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //LIGHTS
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -201,6 +212,8 @@ const BallRoomRender = React.createClass({
 
 		  render();
 		  initAudioPlayer();
+
+		  window.addEventListener('resize', onWindowResize, false);
 
 		});
 
