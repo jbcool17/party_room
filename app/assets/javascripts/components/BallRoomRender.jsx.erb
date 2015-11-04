@@ -41,6 +41,17 @@ const BallRoomRender = React.createClass({
 
 		controls = new THREE.OrbitControls( camera, renderer.domElement );
 		controls.autoRotate = true;
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//RESIZER
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		var onWindowResize = function(event) {
+	    	camera.aspect = window.innerWidth / window.innerHeight;
+	    	camera.updateProjectionMatrix();
+
+	    	renderer.setSize(window.innerWidth, window.innerHeight);
+		}
+		
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //LIGHTS
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -49,46 +60,50 @@ const BallRoomRender = React.createClass({
 		        scene.add( ambient );
 
 		var pointLight = new THREE.PointLight( 0xffffff, 2 );
-		pointLight.position.y = 100;
-		pointLight.intensity = .8;
-		scene.add( pointLight );
+			pointLight.position.y = 100;
+			pointLight.intensity = .8;
+			scene.add( pointLight );
 
 		var spotLight = new THREE.SpotLight( 0xaaaaaa);
-		spotLight.position.set( 0, 350, 0 );
-		spotLight.castShadow = true;
-		//spotLight.shadowDarkness = 1;
-		scene.add( spotLight );
+			spotLight.position.set( 0, 350, 0 );
+			spotLight.castShadow = true;
+			
+			scene.add( spotLight );
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //OBJECTS
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		var phong  = new THREE.MeshPhongMaterial( { color: 0xffffff, opacity: 0.5}); //0x111111
+		
+		//GROUND
 		var planeGeometry = new THREE.PlaneGeometry( 500, 500, 100, 100 );
-		        planeGeometry.rotateX( - Math.PI / 2 );
-		        materialPlane = new THREE.MeshBasicMaterial( { color: 0xffffff } ); //0x0011ff
+        	planeGeometry.rotateX( - Math.PI / 2 );
 
-		        var ground = new THREE.Mesh( planeGeometry, phong );
-		        ground.position.y = -10;
-		        ground.receiveShadow = true;
-		        scene.add( ground );
 
+        var ground = new THREE.Mesh( planeGeometry, phong );
+	        ground.position.y = -10;
+	        ground.receiveShadow = true;
+	        scene.add( ground );
+
+		//Creating Grid of Spheres
 		var sphereHoldAudio = [];
+
 		var Z = 0;
 		for (var i = 0; i < 10; i++ ) {
 		    var X = 0;
 		    for (var j = 0; j < 10; j ++ ) {
 		      sphereGeometry = new THREE.SphereGeometry( 50, 16, 8 );
-		      //sphereGeometry = new THREE.SphereGeometry( 5 );
 		      var material = new THREE.MeshBasicMaterial( { color: 0xaaffff, shininess: 100,
 														    shading: THREE.SmoothShading, wireframe: true } );
 		      mesh = new THREE.Mesh( sphereGeometry, material);
 		      mesh.position.x = X - 70;
 		      mesh.position.z = Z - 70;
-		      mesh.scale.x = .1
-		      mesh.scale.y = .1
-		      mesh.scale.z = .1
+		      mesh.scale.x = .1;
+		      mesh.scale.y = .1;
+		      mesh.scale.z = .1;
 		      mesh.castShadow = true;
 		      scene.add(mesh);
+		      
 		      sphereHoldAudio.push(mesh);
 		      X +=20; 
 		    }
@@ -102,44 +117,49 @@ const BallRoomRender = React.createClass({
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		var render = function() {
 
-		    requestAnimationFrame(render);
+			    requestAnimationFrame(render);
 
-		    var time = Date.now() * 0.00005;
-		    h = (360 * (1.0 + time) % 360) / 360;
+			    var time = Date.now() * 0.00005;
+			    h = (360 * (1.0 + time) % 360) / 360;
+				
+				//Rotate Spheres
+			    for ( var i = 0; i < sphereHoldAudio.length; i++ ) {
+			      
+			    	sphereHoldAudio[i].rotation.x += 0.01;
 
-		    for (var i = 0; i < sphereHoldAudio.length; i++ ) {
-		      
-		     sphereHoldAudio[i].rotation.x += 0.01;
-		    }
-
-		    pointLight.color.setHSL(h, 0.5, 0.5);
-		    controls.update();
-		    renderer.render(scene, camera);
+			    }
+				
+				//Change Light Color
+			    pointLight.color.setHSL(h, 0.5, 0.5);
+			    
+			    controls.update();
+			    renderer.render(scene, camera);
 		    
 		};
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //AUDIO
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		// Create a new instance of an audio object and adjust some of its properties
+		var canvas, ctx, source, context, analyser, fbc_array, bars, bar_x, bar_width, bar_height;
+		
+		//Create Audio Object
 		var audio = new Audio();
 		audio.src = "<%= asset_path '2001_Strauss.mp3' %>";
 		audio.controls = true;
 		audio.loop = true;
-		audio.autoplay = true;
+		audio.autoplay = true;		
 
-		// Establish all variables that your Analyser will use
-		var canvas, ctx, source, context, analyser, fbc_array, bars, bar_x, bar_width, bar_height;
-
-		// Initialize the MP3 player after the page loads all of its HTML into the window
-		window.addEventListener("load", initMp3Player, false);
-
+		// Initialize the audio player
+		window.addEventListener("load", initAudioPlayer, false);
+	
+		//Audio Analyzer
 		var frameLooper = function (){
 		    window.requestAnimationFrame(frameLooper);
+
 		    fbc_array = new Uint8Array(analyser.frequencyBinCount);
 		    analyser.getByteFrequencyData(fbc_array);
-		    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-		    ctx.fillStyle = '#00CCFF'; // Color of the bars
+		    //ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+		    //ctx.fillStyle = '#00CCFF'; // Color of the bars
 		    
 		    for (var i = 0; i < fbc_array.length; i++) {
 		        bar_x = i * 3;
@@ -149,46 +169,50 @@ const BallRoomRender = React.createClass({
 		        
 		        
 		        if ( bar_height < -90 ) {
-
+					
+					//Huge Spheres
 					sphereHoldAudio[i].scale.x = -1 * (bar_height + 1);
 					sphereHoldAudio[i].scale.y = -1 * (bar_height + 1);
 					sphereHoldAudio[i].scale.z = -1 * (bar_height + 1);
 
 		        } else if (bar_height < -30 ){
-
+					
+					//Changes Color and Sets Scale
 		        	sphereHoldAudio[i].material.color.setHSL(h * bar_height, 0.5, 0.5);
 		        	sphereHoldAudio[i].scale.x = .1;
 					sphereHoldAudio[i].scale.y = .1;
 					sphereHoldAudio[i].scale.z = .1;
 
 		        } else {
-
+					
 		          	sphereHoldAudio[i].material.color.setHSL(h * bar_height, 0.5, 1);
-		          	//sphereHoldAudio[i].scale.x = .1;
-					//sphereHoldAudio[i].scale.y = .1;
-					//sphereHoldAudio[i].scale.z = .1;
 
 		        }
 		       
 		    }
 		}
-		var initMp3Player = function (){
+
+		var initAudioPlayer = function (){
 		    document.getElementById('audio_box').appendChild(audio);
+		    
 		    context = new AudioContext(); // AudioContext object instance
 		    analyser = context.createAnalyser(); // AnalyserNode method
 		    canvas = document.getElementById('analyser_render');
-		    ctx = canvas.getContext('2d');
+		    
 		    // Re-route audio playback into the processing graph of the AudioContext
 		    source = context.createMediaElementSource(audio); 
 		    source.connect(analyser);
 		    analyser.connect(context.destination);
+
+		    //Start Analyzing
 		    frameLooper();
 		}
 
 		$(document).ready(function() {
 
 		  render();
-		  initMp3Player();
+		  initAudioPlayer();
+		  window.addEventListener('resize', onWindowResize, false);
 
 		});
 

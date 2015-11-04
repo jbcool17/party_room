@@ -1,29 +1,24 @@
 const CubeForestRender = React.createClass({
 	render(){
-		var scene, camera, renderer;
-		var cubeGeometry, cube, material;
-		var sphereGeometry, sphere;
-		var objects = [];
-		var lastTime;
-
+		
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //Setup Scene and Effects
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		scene = new THREE.Scene();
-		scene.fog = new THREE.FogExp2(0x000000, 0.001);
+		var scene = new THREE.Scene();
+			scene.fog = new THREE.FogExp2(0x000000, 0.001);
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //CAMERA
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
-		camera.position.x = -10;
-		camera.position.y = 0;
-		camera.position.z = 10;
+		var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+			camera.position.x = -10;
+			camera.position.y = 0;
+			camera.position.z = 10;
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //RENDERS
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		renderer = new THREE.WebGLRenderer();
+		var renderer = new THREE.WebGLRenderer();
 		renderer.setSize(window.innerWidth, window.innerHeight);
 		renderer.shadowMap.enabled = true;
 		renderer.shadowMap.type = THREE.BasicShadowMap;
@@ -35,22 +30,22 @@ const CubeForestRender = React.createClass({
 //LIGHTS
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		var light = new THREE.AmbientLight(0x040404); // soft white light
-		scene.add(light);
+			scene.add(light);
 
 		var spotLight = new THREE.SpotLight(0xffffff);
-		spotLight.position.set(1, 20, 10);
-		spotLight.castShadow = true;
-		spotLight.shadowCameraNear = 8;
-		spotLight.shadowCameraFar = 30;
-		spotLight.shadowMapWidth = 1024;
-		spotLight.shadowMapHeight = 1024;
-		spotLight.angle = 1;
-		spotLight.exponent = 5;
-		spotLight.shadowDarkness = 1;
-		spotLight.name = 'SpotLight';
+			spotLight.position.set(1, 20, 10);
+			spotLight.castShadow = true;
+			spotLight.shadowCameraNear = 8;
+			spotLight.shadowCameraFar = 30;
+			spotLight.shadowMapWidth = 1024;
+			spotLight.shadowMapHeight = 1024;
+			spotLight.angle = 1;
+			spotLight.exponent = 5;
+			spotLight.shadowDarkness = 1;
+			spotLight.name = 'SpotLight';
 
 		var pointLightOne = new THREE.PointLight(0xff0000);
-		pointLightOne.position.set(1, 1, 10);
+			pointLightOne.position.set(1, 10, 10);
 
 		scene.add( light, spotLight, pointLightOne);
 
@@ -58,34 +53,30 @@ const CubeForestRender = React.createClass({
 //CONTROLS
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-		controls = new THREE.FirstPersonControls( camera );
+		var controls = new THREE.FirstPersonControls( camera );
 		        controls.movementSpeed = 40;
-		        controls.lookSpeed = 0.1;
+		        controls.lookSpeed = 0.01;
 		        controls.lookVertical = false;
 
-		lastTime = performance.now();
+		var lastTime = performance.now();
 	
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //RESIZER
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 		var onWindowResize = function(event) {
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
-			renderer.setSize(window.innerWidth, window.innerHeight);
+	    	camera.aspect = window.innerWidth / window.innerHeight;
+	    	camera.updateProjectionMatrix();
+
+	    	renderer.setSize(window.innerWidth, window.innerHeight);
 		}
 
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//Setup OIMO WORLD
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		var world = new OIMO.World(1/120, 2, 8)
-		setInterval(function(){ world.step() }, 1000/60);
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//OBJECTS
+//Growing Cubes
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		phongMaterial = new THREE.MeshPhongMaterial({ color: 0x156289, emissive: 0x072534 });
-		material = new THREE.MeshBasicMaterial({ name: 'green-wire', 
+		var phongMaterial = new THREE.MeshPhongMaterial({ color: 0x156289, emissive: 0x072534 });
+		var cubeMaterial = new THREE.MeshBasicMaterial({ name: 'green-wire', 
 												color: 0x00ff00, 
 												wireframe: true });
 												
@@ -97,28 +88,29 @@ const CubeForestRender = React.createClass({
 		//GROUND
 		var planeGeometry = new THREE.PlaneGeometry( 100, 100, 1 );
 		var ground = new THREE.Mesh( planeGeometry, planeMaterial );
-		ground.rotateX( - Math.PI / 2 );
-		ground.position.y = -2;
-		ground.scale.x = 100;
-		ground.scale.y = 100;
-		ground.castShadow = false;
-		ground.receiveShadow = true;
-		ground.name = 'Ground'
-		scene.add( ground );
+			ground.rotateX( - Math.PI / 2 );
+			ground.position.y = -2;
+			ground.scale.x = 100;
+			ground.scale.y = 100;
+			ground.castShadow = false;
+			ground.receiveShadow = true;
+			ground.name = 'Ground'
+			scene.add( ground );
 		
-		//CUBES
-		cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+		//Growing CUBES - Creation
+		var cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
 		var cubeHolder = []; //holds some cube info
 
 		var cubeCreate = function(cubeName) {
+		
 			this.cubeName = cubeName;
 			this.cubeRotation = true;
-			this.cube = new THREE.Mesh(cubeGeometry, material);
+			this.cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
 			this.cube.castShadow = true;
 			this.cube.name = 'Cube'
 			scene.add(this.cube);
 
-			return this.cubeName;
+			//return this.cubeName;
 		}
 
 		var cubeRemove = function() {
@@ -135,77 +127,78 @@ const CubeForestRender = React.createClass({
 		}
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//RANDOM CUBE SYSTEM
+//RANDOM BOX SYSTEM
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-		var boxBody;
+		var boxHolder = [];
 		var boxBodies = [];
+		var boxBody;
+
 		for ( var i = 0; i < 1000; i ++ ) {
 
 			var boxGeometry = new THREE.BoxGeometry(10, 10, 10);
-			var randomColor = '0x' + Math.floor(Math.random()*16777215).toString(16);
-			var cubeSystemMaterial = new THREE.MeshPhongMaterial( { specular: 0x111111, 
-			                                                    emissive: 0x010101, 
-			                                                    shininess: 100, 
-			                                                    shading: THREE.SmoothShading, 
-			                                                    opacity: 0.9, 
-			                                                    transparent: true });
+			
+			//var randomColor = '0x' + Math.floor(Math.random()*16777215).toString(16);
 
-			var object = new THREE.Mesh( boxGeometry, cubeSystemMaterial );
+			var boxSystemMaterial = new THREE.MeshPhongMaterial({ color: 0x000000, shading: THREE.SmoothShading, 
+																	shinniness:100, 
+																	specular: 0xc04b4b, reflectivity: 100 });
 
+			//Set Positive or Negative
 			var plusMinus = Math.floor(Math.random()*2) == 1 ? 1 : -1;
-			object.material.color.setHex(randomColor);
+			
+			var box = new THREE.Mesh( boxGeometry, boxSystemMaterial );
+				box.position.x = (Math.random() * 1000) * plusMinus + 100;
+				box.position.y = 0;
+				box.position.z = (Math.random() * 1000) + 100;
+				box.scale.y = Math.random() + 5;
+				box.scale.x = 1.5;
+				box.name = 'boxSystem';
 
-			object.position.x = (Math.random() * 1000) * plusMinus + 100;
-			object.position.y = 0;
-			object.position.z = (Math.random() * 1000) +100;
-			object.scale.y = Math.random() + 5;
-			object.castShadow = true;
-			object.name = 'CubeSystem';
-			scene.add( object );
-			boxBody  = THREEx.Oimo.createBodyFromMesh(world, object, {move: false});
+			scene.add( box );
+			
 
-			objects.push(object);
-			boxBodies.push(boxBody);
+			//adding THREE & Oimo Boxes to arrays
+			boxHolder.push( box );
+			boxBodies.push( boxBody );
 
 		}    
 
 		
-		//FirstPerson
-		var test = new THREE.Mesh(cubeGeometry, material);
-		controls.object.add(test);
-		var person = controls.object.children[0];
-		var personView = THREEx.Oimo.createBodyFromMesh(world, person, {move: false});
+		
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //PARTICLE - Star Like in Background
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 		var sprite = THREE.ImageUtils.loadTexture("<%= asset_path 'textures/disc.png' %>");
-		var particleCount = 8000,
-		particles = new THREE.Geometry(),
-		particleMaterial = new THREE.PointsMaterial({ size: 6,
+
+		var particleCount = 8000;
+
+		var particles = new THREE.Geometry();
+
+		var particleMaterial = new THREE.PointsMaterial({ size: 6,
 													sizeAttenuation: false,
 													map: sprite,
 													alphaTest: 0.5,
 													transparent: true });
 
-		particleMaterial.color.setHSL( 1.0, 5, 0.7 );
+			particleMaterial.color.setHSL( 1.0, 5, 0.7 );
 
 		for (var p = 0; p < particleCount; p++) {
 
-			var pX = Math.random() * 4000 - 2000,
-      		pY = Math.random() * 4000 - 2000,
-    	  	pZ = Math.random() * 4000 - 2000,
-	      	particle = new THREE.Vector3(pX, pY, pZ);
+			var pX = Math.random() * 4000 - 2000;
+      		var pY = Math.random() * 4000 - 2000;
+    	  	var pZ = Math.random() * 4000 - 2000;
+	      	
+	      	var particle = new THREE.Vector3(pX, pY, pZ);
+				particle.velocity = new THREE.Vector3( 0, -Math.random(), 0 );
 
-			particle.velocity = new THREE.Vector3( 0, -Math.random(), 0 );
 			particles.vertices.push( particle );
-
 		}
 
 		// create the particle system
 		var particleSystem = new THREE.Points( particles, particleMaterial);
-		particleSystem.position.x = 0;
+			particleSystem.position.x = 0;
 
 		// add it to the scene
 		scene.add(particleSystem);
@@ -220,32 +213,24 @@ const CubeForestRender = React.createClass({
 		
 		//RENDER & ANIMATE SCENE
 		var render = function() {
+
 			requestAnimationFrame(render);
-
-			for(var i = 0; i < objects.length; i++ ) {
-
-				if ( controls.object.position.distanceTo(objects[i].position) < 8  ) {
-
-				    console.log('HIT');
-				    controls.freeze = true;
-				    if ( controls.moveBackward || controls.moveLeft || controls.moveRight ){
-				        controls.freeze = false;
-				    }
-				}
-			}
-
-			THREEx.Oimo.updateObject3dWithBody(person, personView);
-
+			
+			//Time
 			var time = Date.now() * 0.00005;
 			h = (360 * (1.0 + time) % 360) / 360;
-			material.color.setHSL(h, 0.5, 0.5);
-			particleMaterial.color.setHSL(h, 0.5, 0.5);
-	
-			for (i = 0; i < objects.length; i++) {
-				var object = objects[i];
+			
+
+			cubeMaterial.color.setHSL(h, 0.5, 0.5);
+			
+			
+			// BOX System
+			for (i = 0; i < boxHolder.length; i++) {
+				var object = boxHolder[i];
 			}
 
 			//Particle System
+			particleMaterial.color.setHSL(h, 0.5, 0.5);
 			for ( i = 0; i < scene.children.length; i++ ) {
 
 				var object = scene.children[i];
@@ -259,7 +244,7 @@ const CubeForestRender = React.createClass({
 				
 				if (object instanceof THREE.PointLight) {
 
-			  	  object.color.setHSL(h, 0.5, 0.5);
+			  	 object.color.setHSL(h, 0.5, 0.5);
 
 				}
 
@@ -289,11 +274,13 @@ const CubeForestRender = React.createClass({
 		}
 
 			var timeAlso = performance.now() / 1000;
-			controls.update( timeAlso - lastTime ); 
-			// controls.update();
+			controls.update( timeAlso - lastTime );
+
 			renderer.render(scene, camera);
+			
 			lastTime = timeAlso;
 		};
+
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //AUDIO
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -305,76 +292,58 @@ const CubeForestRender = React.createClass({
 		audio.autoplay = true;
 
 		// Establish all variables that your Analyser will use
-		var canvas, ctx, source, context, analyser, fbc_array, bars, bar_x, bar_width, bar_height;
+		var canvas, ctx, source, context, analyser, fbc_array, bars, bar_width, bar_height;
 
-		// Initialize the MP3 player after the page loads all of its HTML into the window
-		window.addEventListener("load", initMp3Player, false);
+		window.addEventListener("load", initAudioPlayer, false);
+
 		var frameLooper = function (){
+
 		    window.requestAnimationFrame(frameLooper);
+		    
 		    fbc_array = new Uint8Array(analyser.frequencyBinCount);
 		    analyser.getByteFrequencyData(fbc_array);
-		    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
-		    ctx.fillStyle = '#00CCFF'; // Color of the bars
-		    bars = 100;
 		    
-		    for (var i = 0; i < objects.length; i++) {
-		        bar_x = i * 3;
-		        bar_width = Math.random() * fbc_array[i] / 2;
-		        bar_height = -fbc_array[i];
-		        var time = Date.now() * 0.00005;
+		    
+		    for (var i = 0; i < boxHolder.length; i++) {
+		       	
+		       	var time = Date.now() * 0.00005;
 				h = (360 * (1.0 + time) % 360) / 360;
-				
-		        objects[i].position.y = -1 * (bar_height + 1);
-		        
-		        if ( bar_height < -100 ) {
-		        	objects[i].material.color.setHSL(h * bar_height, 0.5, 0.5);
-					material.color.setHSL(h, 0.5, 0.5);
+
+		        bar_height = fbc_array[i];
+
+		        boxHolder[i].position.y = bar_height + 1;
+
+		        if ( bar_height > 100 ) {
+		        	boxHolder[i].material.color.setHSL(h * bar_height, 0.5, 0.5);
 		        } else {
-		        	//objects[i].material.color.setHSL(h * bar_height, 0.5, 1);
+
+		        	//boxHolder[i].meterial.color.setRGB(0,0,0);
+
 		        }
+		
+		       
+		        
 		    }
 		}
 
-		var initMp3Player = function (){
+		var initAudioPlayer = function (){
 
 		    document.getElementById('audio_box').appendChild(audio);
 		    context = new AudioContext(); // AudioContext object instance
 		    analyser = context.createAnalyser(); // AnalyserNode method
-		    canvas = document.getElementById( 'analyser_render' );
-		    ctx = canvas.getContext('2d');
+		    //canvas = document.getElementById( 'analyser_render' );
+		    //ctx = canvas.getContext('2d');
 		    // Re-route audio playback into the processing graph of the AudioContext
 		    source = context.createMediaElementSource( audio ); 
 		    source.connect(analyser);
 		    analyser.connect(context.destination);
+
 		    frameLooper();
 		}
 
-
-		$(document).ready(function() {
-
-			render();
-			initMp3Player();
-
-			window.addEventListener('resize', onWindowResize, false);
-
-			$('#addBoxes').on('click', function() {
-
+		setInterval( function() {
 				var a = new cubeCreate(cubeHolder.length.toString());
 				cubeHolder.push(a);
-				console.log('CUBE HOLDER Length:', cubeHolder.length);
-
-			});
-
-			$('#removeBoxes').on('click', function() {
-
-			cubeRemove();
-
-			});
-
-			setInterval(function() {
-				var a = new cubeCreate(cubeHolder.length.toString());
-				cubeHolder.push(a);
-
 
 				if (cubeHolder.length === 100) {
 
@@ -386,11 +355,18 @@ const CubeForestRender = React.createClass({
 				            scene.children.splice(i, 1);
 				        }
 				    });
-				    console.log('A CUBE HAS BEEN REMOVED');
-
-				    // cubeRemove();
+				    
 				}
 			}, 2000);
+
+
+		$(document).ready(function() {
+
+			render();
+
+			initAudioPlayer();
+
+			window.addEventListener('resize', onWindowResize, false);
 
 		});
 
