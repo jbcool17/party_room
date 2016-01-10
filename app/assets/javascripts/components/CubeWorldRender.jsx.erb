@@ -73,12 +73,13 @@ const CubeWorldRender = React.createClass({
 		});
 
 		var particle = new THREE.Mesh( geometry, pMaterial );
-			particle.name = "Cube Particle";
-			particle.position.x = Math.random() * 2000 - 1000;
-			particle.position.y = Math.random() * 2000 - 1000;
-			particle.position.z = Math.random() * 2000 - 1000;
-			particle.scale.x = particle.scale.y = particle.scale.z = 0;
-			particle.rotateSpeed = Math.random() * 0.008;
+
+		particle.name = "Cube Particle";
+		particle.position.x = Math.random() * 2000 - 1000;
+		particle.position.y = Math.random() * 2000 - 1000;
+		particle.position.z = Math.random() * 2000 - 1000;
+		particle.scale.x = particle.scale.y = particle.scale.z = 0;
+		particle.rotateSpeed = Math.random() * 0.008;
 
 		scene.add(particle);
 	}
@@ -139,7 +140,7 @@ const CubeWorldRender = React.createClass({
 	  });
 
 		SC.get('/resolve', {
-			url: 'http://soundcloud.com/headphoneactivist/silent-flo',
+			url: 'https://soundcloud.com/lucianofficial/black-coast-trndsttr-lucian-remix',
 			client_id: '1c9f160d24af014540a03be9e0afa4c6'
 		}).then(function(track) {
 			audio.src = track.stream_url + '?client_id=1c9f160d24af014540a03be9e0afa4c6';
@@ -148,7 +149,7 @@ const CubeWorldRender = React.createClass({
 		audio.controls = true;
 		audio.loop = true;
 		audio.autoplay = true;
-	  audio.crossOrigin="anonymous";
+	  audio.crossOrigin = "anonymous";
 
     $(audio).on('canplay', function() {
     	if(!playing){
