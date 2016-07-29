@@ -3,6 +3,8 @@
 Bring the party to your browser with THREE.js!
 An experimental sandbox, learning THREE.js.
 
+Link: Go to the [Party Room!](http://partyroom.herokuapp.com/)
+
 ### Version
 1.0.0
 
